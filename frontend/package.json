@@ -12,5 +12,9 @@
     "gsap": "^3.13.0",
     "pixi.js": "^8.14.2",
     "three": "^0.181.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
   }
 }
