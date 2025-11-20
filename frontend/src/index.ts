@@ -1,5 +1,8 @@
 import { gsap } from 'gsap';
-import { Application, Assets, Sprite, TextureSource } from 'pixi.js';
+import {
+	Application, Assets, Sprite,
+	TextureSource 
+} from 'pixi.js';
 import {
 	Scene, PerspectiveCamera, WebGLRenderer, 
 	BoxGeometry, MeshBasicMaterial, Mesh
@@ -10,15 +13,17 @@ import {
 	await app.init({
 		width: 800,
 		height: 600,
-		background: '#1099bb',
+		clearBeforeRender: false,
 		backgroundAlpha: 0,
+		autoStart: false,
+		antialias: true,
 	});
 	document.body.appendChild(app.canvas);
 
 	TextureSource.defaultOptions.scaleMode = 'nearest';
 	const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
 
-		const logo = new Sprite({
+	const logo = new Sprite({
 		texture,
 		anchor: 0.5,
 		x: app.screen.width / 2,
@@ -39,16 +44,10 @@ import {
 
 	app.stage.addChild(logo);
 
-
-	const threeCanvas = document.createElement("canvas");
-	threeCanvas.width = 800;
-	threeCanvas.height = 600;
-	document.body.appendChild(threeCanvas);
-	threeCanvas.style.position = "absolute";
-	threeCanvas.style.top = "0";
-	threeCanvas.style.left = "0";
-	threeCanvas.style.zIndex = "-1";
-
+	const renderer = new WebGLRenderer({ 
+		context: app.renderer.gl,
+		alpha: true
+	});
 	const scene = new Scene();
 	const camera = new PerspectiveCamera(
 		75,
@@ -57,9 +56,6 @@ import {
 		1000
 	);
 	camera.position.z = 5;
-
-	const renderer = new WebGLRenderer({ canvas: threeCanvas, alpha: true });
-	renderer.setSize(800, 600);
 
 	const geometry = new BoxGeometry();
 	const material = new MeshBasicMaterial({ color: 0x00ff00 });
@@ -74,10 +70,20 @@ import {
 		ease: "none",
 	});
 
-	function animate() {
-		requestAnimationFrame(animate);
+
+	let pt = performance.now();
+	const render = (t: number) => {
+		// const d = (t - pt) / (1000/60);
+		pt = t;
+
+		renderer.resetState();
 		renderer.render(scene, camera);
+
+		app.renderer.resetState();
+		app.renderer.render(app.stage);
+
+		requestAnimationFrame(render);
 	}
-	animate();
+	requestAnimationFrame(render);
 })();
 
