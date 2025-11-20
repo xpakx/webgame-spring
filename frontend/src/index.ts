@@ -5,8 +5,12 @@ import {
 } from 'pixi.js';
 import {
 	Scene, PerspectiveCamera, WebGLRenderer, 
-	BoxGeometry, MeshBasicMaterial, Mesh
+	BoxGeometry, MeshBasicMaterial, Mesh,
+	MeshStandardMaterial, HemisphereLight,
+	RepeatWrapping, MirroredRepeatWrapping
 } from "three";
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { DDSLoader } from "three/examples/jsm/loaders/DDSLoader";
 
 (async () => {
 	const app = new Application();
@@ -60,7 +64,14 @@ import {
 	const geometry = new BoxGeometry();
 	const material = new MeshBasicMaterial({ color: 0x00ff00 });
 	const cube = new Mesh(geometry, material);
-	scene.add(cube);
+	// scene.add(cube);
+	
+	const object = await loadNeptune(scene)
+
+	scene.add(object);
+
+	scene.add(new HemisphereLight(0xffffff, 0x444444, 2));
+
 
 	gsap.to(cube.rotation, {
 		x: Math.PI * 2,
@@ -70,6 +81,12 @@ import {
 		ease: "none",
 	});
 
+	gsap.to(object.rotation, {
+		y: Math.PI * 2,
+		duration: 5,
+		repeat: -1,
+		ease: "none",
+	});
 
 	let pt = performance.now();
 	const render = (t: number) => {
@@ -87,3 +104,61 @@ import {
 	requestAnimationFrame(render);
 })();
 
+
+async function loadTeapot(scene) {
+	const loader = new OBJLoader();
+	const object = await loader.loadAsync( 'assets/teapot.obj' );
+	object.scale.set(0.5, 0.5, 0.5);
+	object.position.set(0, 0, 0);
+	object.rotation.set(0, 0, 0);
+	return object;
+}
+
+
+async function loadNeptune(scene) {
+	const ddsLoader = new DDSLoader();
+	const bodyTexture = ddsLoader.load('assets/Texf_body02.dds');
+	const headTexture = ddsLoader.load('assets/Tex002f_body01.dds');
+	const eyeTexture = ddsLoader.load('assets/Tex001f_eye.dds');
+	const mouthTexture = ddsLoader.load('assets/Texf_mouse.dds');
+	for (const tex of [bodyTexture, headTexture, eyeTexture, mouthTexture]) {
+		tex.wrapS = MirroredRepeatWrapping;
+		tex.wrapT = MirroredRepeatWrapping;
+	}
+
+	const loader = new OBJLoader();
+	const object = await loader.loadAsync( 'assets/neptune.obj' );
+	object.scale.set(0.02, 0.02, 0.02);
+
+	object.traverse((child) => {
+		if ((child as Mesh).isMesh) {
+			const mesh = child as Mesh;
+			console.log(mesh.name)
+			if (mesh.name == "Object01") {
+				mesh.material = new MeshStandardMaterial({
+					map: mouthTexture,
+				});
+			}
+			if (mesh.name == "Object04") {
+				mesh.material = new MeshStandardMaterial({
+					map: eyeTexture,
+				});
+			}
+			if (mesh.name == "Object03") {
+				mesh.material = new MeshStandardMaterial({
+					map: bodyTexture,
+				});
+			}
+			if (mesh.name == "Object02") {
+				mesh.material = new MeshStandardMaterial({
+					map: headTexture,
+				});
+			}
+		}
+	});
+
+	object.position.set(0, 0, 0);
+	object.rotation.set(0, 0, 0);
+	console.log(object.children.length)
+	return object;
+}
