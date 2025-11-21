@@ -7,12 +7,13 @@ import {
 	Scene, PerspectiveCamera, WebGLRenderer, 
 	BoxGeometry, MeshBasicMaterial, Mesh,
 	MeshStandardMaterial, HemisphereLight,
-	RepeatWrapping, MirroredRepeatWrapping
+	MirroredRepeatWrapping
 } from "three";
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { DDSLoader } from "three/examples/jsm/loaders/DDSLoader";
 
 (async () => {
+	gsap.ticker.remove(gsap.updateRoot);
 	const app = new Application();
 	await app.init({
 		width: 800,
@@ -66,7 +67,7 @@ import { DDSLoader } from "three/examples/jsm/loaders/DDSLoader";
 	const cube = new Mesh(geometry, material);
 	// scene.add(cube);
 	
-	const object = await loadNeptune(scene)
+	const object = await loadNeptune()
 
 	scene.add(object);
 
@@ -88,10 +89,8 @@ import { DDSLoader } from "three/examples/jsm/loaders/DDSLoader";
 		ease: "none",
 	});
 
-	let pt = performance.now();
 	const render = (t: number) => {
-		// const d = (t - pt) / (1000/60);
-		pt = t;
+		gsap.updateRoot(t / 1000);
 
 		renderer.resetState();
 		renderer.render(scene, camera);
@@ -105,7 +104,7 @@ import { DDSLoader } from "three/examples/jsm/loaders/DDSLoader";
 })();
 
 
-async function loadTeapot(scene) {
+async function loadTeapot() {
 	const loader = new OBJLoader();
 	const object = await loader.loadAsync( 'assets/teapot.obj' );
 	object.scale.set(0.5, 0.5, 0.5);
@@ -115,7 +114,7 @@ async function loadTeapot(scene) {
 }
 
 
-async function loadNeptune(scene) {
+async function loadNeptune() {
 	const ddsLoader = new DDSLoader();
 	const bodyTexture = ddsLoader.load('assets/Texf_body02.dds');
 	const headTexture = ddsLoader.load('assets/Tex002f_body01.dds');
@@ -130,8 +129,8 @@ async function loadNeptune(scene) {
 	const object = await loader.loadAsync( 'assets/neptune.obj' );
 	object.scale.set(0.02, 0.02, 0.02);
 
-	object.traverse((child) => {
-		if ((child as Mesh).isMesh) {
+	object.traverse((child: Mesh) => {
+		if (child.isMesh) {
 			const mesh = child as Mesh;
 			console.log(mesh.name)
 			if (mesh.name == "Object01") {
