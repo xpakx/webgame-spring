@@ -1,9 +1,5 @@
 import { gsap } from 'gsap';
 import {
-	Assets, Sprite,
-	TextureSource 
-} from 'pixi.js';
-import {
 	Scene, PerspectiveCamera,
 	BoxGeometry, MeshBasicMaterial, Mesh,
 	HemisphereLight,
@@ -11,37 +7,19 @@ import {
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { Renderer } from './renderer';
 import { Game } from './game';
+import { UIManager } from './ui';
 
 (async () => {
 	const r = new Renderer();
 	await r.init()
 	const game = new Game()
-
+	const ui = new UIManager(
+		r.app.stage,
+		r.app.screen.width,
+		r.app.screen.height,
+	);
+	ui.loadAssets();
 	gsap.ticker.remove(gsap.updateRoot);
-
-	TextureSource.defaultOptions.scaleMode = 'nearest';
-	const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
-
-	const logo = new Sprite({
-		texture,
-		anchor: 0.5,
-		x: r.app.screen.width / 2,
-		y: r.app.screen.height / 2,
-	});
-
-	logo.width = 100;
-	logo.scale.y = logo.scale.x;
-	logo.eventMode = 'static';
-
-	const xTo = gsap.quickTo(logo, 'x', { duration: 0.6, ease: 'power3' });
-	const yTo = gsap.quickTo(logo, 'y', { duration: 0.6, ease: 'power3' });
-
-	logo.on('globalpointermove', (event) => {
-		xTo(event.global.x);
-		yTo(event.global.y);
-	});
-
-	r.app.stage.addChild(logo);
 
 	const scene = new Scene();
 	const camera = new PerspectiveCamera(
