@@ -11,19 +11,12 @@ import {
 } from "three";
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { DDSLoader } from "three/examples/jsm/loaders/DDSLoader";
+import { Renderer } from './renderer';
 
 (async () => {
+	const r = new Renderer();
+	await r.init()
 	gsap.ticker.remove(gsap.updateRoot);
-	const app = new Application();
-	await app.init({
-		width: 800,
-		height: 600,
-		clearBeforeRender: false,
-		backgroundAlpha: 0,
-		autoStart: false,
-		antialias: true,
-	});
-	document.body.appendChild(app.canvas);
 
 	TextureSource.defaultOptions.scaleMode = 'nearest';
 	const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
@@ -31,8 +24,8 @@ import { DDSLoader } from "three/examples/jsm/loaders/DDSLoader";
 	const logo = new Sprite({
 		texture,
 		anchor: 0.5,
-		x: app.screen.width / 2,
-		y: app.screen.height / 2,
+		x: r.app.screen.width / 2,
+		y: r.app.screen.height / 2,
 	});
 
 	logo.width = 100;
@@ -47,12 +40,8 @@ import { DDSLoader } from "three/examples/jsm/loaders/DDSLoader";
 		yTo(event.global.y);
 	});
 
-	app.stage.addChild(logo);
+	r.app.stage.addChild(logo);
 
-	const renderer = new WebGLRenderer({ 
-		context: app.renderer.gl,
-		alpha: true
-	});
 	const scene = new Scene();
 	const camera = new PerspectiveCamera(
 		75,
@@ -92,11 +81,11 @@ import { DDSLoader } from "three/examples/jsm/loaders/DDSLoader";
 	const render = (t: number) => {
 		gsap.updateRoot(t / 1000);
 
-		renderer.resetState();
-		renderer.render(scene, camera);
+		r.threeRenderer!.resetState();
+		r.threeRenderer!.render(scene, camera);
 
-		app.renderer.resetState();
-		app.renderer.render(app.stage);
+		r.app.renderer.resetState();
+		r.app.renderer.render(r.app.stage);
 
 		requestAnimationFrame(render);
 	}
