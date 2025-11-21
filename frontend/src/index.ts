@@ -16,6 +16,7 @@ import { Renderer } from './renderer';
 (async () => {
 	const r = new Renderer();
 	await r.init()
+
 	gsap.ticker.remove(gsap.updateRoot);
 
 	TextureSource.defaultOptions.scaleMode = 'nearest';
@@ -80,12 +81,7 @@ import { Renderer } from './renderer';
 
 	const render = (t: number) => {
 		gsap.updateRoot(t / 1000);
-
-		r.threeRenderer!.resetState();
-		r.threeRenderer!.render(scene, camera);
-
-		r.app.renderer.resetState();
-		r.app.renderer.render(r.app.stage);
+		r.render(scene, camera)
 
 		requestAnimationFrame(render);
 	}

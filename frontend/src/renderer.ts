@@ -35,5 +35,10 @@ export class Renderer {
     }
 
     render(threeScene: Scene, threeCamera: Camera) {
+	this.threeRenderer!.resetState();
+	this.threeRenderer!.render(threeScene, threeCamera);
+
+	this.app.renderer.resetState();
+	this.app.renderer.render(this.app.stage);
     }
 }
