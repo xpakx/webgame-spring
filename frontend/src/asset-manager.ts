@@ -1,9 +1,3 @@
-import { gsap } from 'gsap';
-import {
-	Scene, PerspectiveCamera,
-	BoxGeometry, MeshBasicMaterial, Mesh,
-	HemisphereLight,
-} from "three";
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 
 export class AssetManager {

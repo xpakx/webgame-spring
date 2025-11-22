@@ -4,7 +4,6 @@ import {
 	BoxGeometry, MeshBasicMaterial, Mesh,
 	HemisphereLight,
 } from "three";
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { Renderer } from './renderer';
 import { Game } from './game';
 import { UIManager } from './ui';
@@ -41,7 +40,7 @@ import { AssetManager } from './asset-manager';
 	scene.add(object);
 
 	scene.add(new HemisphereLight(0xffffff, 0x444444, 2));
-
+	r.enablePostprocessing(scene, camera);
 
 	gsap.to(cube.rotation, {
 		x: Math.PI * 2,
