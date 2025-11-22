@@ -67,7 +67,7 @@ export class Renderer {
 	    // works correctly with our merged context.
 	    const rgbShiftPass = new ShaderPass(RGBShiftShader);
 
-	    rgbShiftPass.uniforms['amount'].value = 0.005; 
+	    rgbShiftPass.uniforms['amount'].value = 0.002; 
 	    this.composer.addPass(rgbShiftPass);
 
 	    const outputPass = new OutputPass();

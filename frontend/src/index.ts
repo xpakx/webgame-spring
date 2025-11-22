@@ -3,6 +3,10 @@ import {
 	Scene, PerspectiveCamera,
 	BoxGeometry, MeshBasicMaterial, Mesh,
 	HemisphereLight,
+	PCFSoftShadowMap, PlaneGeometry,
+	MeshToonMaterial, ConeGeometry,
+    AmbientLight,
+    DirectionalLight,
 } from "three";
 import { Renderer } from './renderer';
 import { Game } from './game';
@@ -23,24 +27,13 @@ import { AssetManager } from './asset-manager';
 	const assets = new AssetManager();
 
 	const scene = new Scene();
-	const camera = new PerspectiveCamera(
-		75,
-		800 / 600,
-		0.1,
-		1000
-	);
-	camera.position.z = 5;
 
 	const geometry = new BoxGeometry();
 	const material = new MeshBasicMaterial({ color: 0x00ff00 });
 	const cube = new Mesh(geometry, material);
 	// scene.add(cube);
 	
-	const object = await assets.loadObj('assets/teapot.obj');
-	scene.add(object);
 
-	scene.add(new HemisphereLight(0xffffff, 0x444444, 2));
-	r.enablePostprocessing(scene, camera);
 
 	gsap.to(cube.rotation, {
 		x: Math.PI * 2,
@@ -50,12 +43,66 @@ import { AssetManager } from './asset-manager';
 		ease: "none",
 	});
 
-	gsap.to(object.rotation, {
+	
+	r.threeRenderer!.setClearColor(0x111111);
+	r.threeRenderer!.autoClear = true;
+	r.threeRenderer!.shadowMap.enabled = true;
+	r.threeRenderer!.shadowMap.type = PCFSoftShadowMap;
+	const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+
+	const groundGeometry = new PlaneGeometry(500, 500);
+	const groundMaterial = new MeshToonMaterial({color: 0x280028});
+	const ground = new Mesh(groundGeometry, groundMaterial);
+	ground.rotation.x = -Math.PI / 2;
+	ground.receiveShadow = true;
+	scene.add(ground);
+	const playerGeometry = new ConeGeometry(0.5, 1.5, 4);
+	const playerMaterial = new MeshToonMaterial({color: 0xff00ff});
+	const player = new Mesh(playerGeometry, playerMaterial);
+	player.position.y = 0.75;
+	player.castShadow = true;
+	scene.add(player);
+
+	const teapot = await assets.loadObj('assets/teapot.obj');
+	teapot.material = new MeshToonMaterial({color: 0xff1155});
+	teapot.position.x = 10;
+	const teapotMaterial = new MeshToonMaterial({color: 0x775555});
+        teapot.traverse(function (child: Mesh) {
+            if (child.isMesh) {
+                child.material = teapotMaterial;
+                child.castShadow = true;
+            }
+        });
+	scene.add(teapot);
+
+	const ambientLight = new AmbientLight(0xffffff, 0.5);
+	scene.add(ambientLight);
+	const directionalLight = new DirectionalLight(0xffffff, 0.7);
+	directionalLight.position.set(20, 30, 20);
+	directionalLight.castShadow = true;
+	directionalLight.shadow.mapSize.width = 2048;
+	directionalLight.shadow.mapSize.height = 2048;
+	directionalLight.shadow.camera.left = -50;
+	directionalLight.shadow.camera.right = 50;
+	directionalLight.shadow.camera.top = 50;
+	directionalLight.shadow.camera.bottom = -50;
+	scene.add(directionalLight);
+	scene.add(new HemisphereLight(0xffffff, 0x444444, 2));
+
+	camera.position.set(0, 15, 12);
+	camera.lookAt(player.position);
+
+	gsap.to(teapot.rotation, {
 		y: Math.PI * 2,
 		duration: 5,
 		repeat: -1,
 		ease: "none",
 	});
+
+
+	// r.enablePostprocessing(scene, camera);
+
 
 	const render = (t: number) => {
 		game.tick()
