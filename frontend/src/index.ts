@@ -8,6 +8,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { Renderer } from './renderer';
 import { Game } from './game';
 import { UIManager } from './ui';
+import { AssetManager } from './asset-manager';
 
 (async () => {
 	const r = new Renderer();
@@ -20,6 +21,7 @@ import { UIManager } from './ui';
 	);
 	ui.loadAssets();
 	gsap.ticker.remove(gsap.updateRoot);
+	const assets = new AssetManager();
 
 	const scene = new Scene();
 	const camera = new PerspectiveCamera(
@@ -35,7 +37,7 @@ import { UIManager } from './ui';
 	const cube = new Mesh(geometry, material);
 	// scene.add(cube);
 	
-	const object = await loadTeapot()
+	const object = await assets.loadObj('assets/teapot.obj');
 	scene.add(object);
 
 	scene.add(new HemisphereLight(0xffffff, 0x444444, 2));
@@ -59,19 +61,10 @@ import { UIManager } from './ui';
 	const render = (t: number) => {
 		game.tick()
 		gsap.updateRoot(t / 1000);
+		ui.update(t);
 		r.render(scene, camera)
 
 		requestAnimationFrame(render);
 	}
 	requestAnimationFrame(render);
 })();
-
-
-async function loadTeapot() {
-	const loader = new OBJLoader();
-	const object = await loader.loadAsync( 'assets/teapot.obj' );
-	object.scale.set(0.5, 0.5, 0.5);
-	object.position.set(0, 0, 0);
-	object.rotation.set(0, 0, 0);
-	return object;
-}
