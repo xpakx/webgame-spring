@@ -28,21 +28,6 @@ import { AssetManager } from './asset-manager';
 
 	const scene = new Scene();
 
-	const geometry = new BoxGeometry();
-	const material = new MeshBasicMaterial({ color: 0x00ff00 });
-	const cube = new Mesh(geometry, material);
-	// scene.add(cube);
-	
-
-
-	gsap.to(cube.rotation, {
-		x: Math.PI * 2,
-		y: Math.PI * 2,
-		duration: 5,
-		repeat: -1,
-		ease: "none",
-	});
-
 	
 	r.threeRenderer!.setClearColor(0x111111);
 	r.threeRenderer!.autoClear = true;
@@ -64,10 +49,12 @@ import { AssetManager } from './asset-manager';
 	player.castShadow = true;
 	scene.add(player);
 
-	const teapot = await assets.loadObj('assets/teapot.obj');
-	teapot.material = new MeshToonMaterial({color: 0xff1155});
+	await assets.loadAsset(
+		'teapot', 'assets/teapot.obj'
+	);
+	const teapot = assets.getAsset('teapot');
 	teapot.position.x = 10;
-	const teapotMaterial = new MeshToonMaterial({color: 0x775555});
+	const teapotMaterial = new MeshToonMaterial({color: 0xff1155});
         teapot.traverse(function (child: Mesh) {
             if (child.isMesh) {
                 child.material = teapotMaterial;
@@ -75,6 +62,9 @@ import { AssetManager } from './asset-manager';
             }
         });
 	scene.add(teapot);
+	const teapot2 = assets.getAsset("teapot");
+	teapot2.position.x = -10;
+	scene.add(teapot2);
 
 	const ambientLight = new AmbientLight(0xffffff, 0.5);
 	scene.add(ambientLight);
