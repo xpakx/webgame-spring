@@ -5,8 +5,8 @@ import {
 	HemisphereLight,
 	PCFSoftShadowMap, PlaneGeometry,
 	MeshToonMaterial, ConeGeometry,
-    AmbientLight,
-    DirectionalLight,
+	AmbientLight,
+	DirectionalLight, Vector3,
 } from "three";
 import { Renderer } from './renderer';
 import { Game } from './game';
@@ -100,11 +100,33 @@ import { AssetManager } from './asset-manager';
 		ease: "none",
 	});
 
+	let keys: {[key: string]: boolean} = {};
+	window.addEventListener('keydown', (e) => keys[e.code] = true);
+	window.addEventListener('keyup', (e) => keys[e.code] = false);
 
 	// r.enablePostprocessing(scene, camera);
+	
+	const playerSpeed = 0.2;
+	function handleInput() {
+		let moveDirection = new Vector3(0, 0, 0);
+		if (keys['KeyW'] || keys['ArrowUp']) moveDirection.z -= 1;
+		if (keys['KeyS'] || keys['ArrowDown']) moveDirection.z += 1;
+		if (keys['KeyA'] || keys['ArrowLeft']) moveDirection.x -= 1;
+		if (keys['KeyD'] || keys['ArrowRight']) moveDirection.x += 1;
+		if(moveDirection.lengthSq() > 0) {
+			moveDirection.normalize();
+			player.position.add(moveDirection.multiplyScalar(playerSpeed));
+			const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
+			player.rotation.y = targetRotation;
+		}
+		camera.position.x = player.position.x;
+		camera.position.z = player.position.z + 12;
+	}
+
 
 
 	const render = (t: number) => {
+		handleInput();
 		game.tick()
 		gsap.updateRoot(t / 1000);
 		ui.update(t);
