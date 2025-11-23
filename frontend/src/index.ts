@@ -52,15 +52,11 @@ import { AssetManager } from './asset-manager';
 	await assets.loadAsset(
 		'teapot', 'assets/teapot.obj'
 	);
+	const teapotMaterial = new MeshToonMaterial({color: 0xff1155});
+	assets.setAssetMaterial('teapot', teapotMaterial)
+
 	const teapot = assets.getAsset('teapot');
 	teapot.position.x = 10;
-	const teapotMaterial = new MeshToonMaterial({color: 0xff1155});
-        teapot.traverse(function (child: Mesh) {
-            if (child.isMesh) {
-                child.material = teapotMaterial;
-                child.castShadow = true;
-            }
-        });
 	scene.add(teapot);
 	const teapot2 = assets.getAsset("teapot");
 	teapot2.position.x = -10;

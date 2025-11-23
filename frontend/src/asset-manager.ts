@@ -1,4 +1,5 @@
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { Material, Mesh } from "three";
 
 interface SavedAsset {
 	asset: any;
@@ -44,5 +45,16 @@ export class AssetManager {
 			return asset.asset;
 		}
 		return asset.asset.clone();
+	}
+
+	setAssetMaterial(key: string, material: Material) {
+		if (!(key in this.library)) return;
+		const asset = this.library[key];
+		asset.asset.traverse(function (child: Mesh) {
+		    if (child.isMesh) {
+			child.material = material;
+			child.castShadow = true;
+		    }
+		});
 	}
 }
