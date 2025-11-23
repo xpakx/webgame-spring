@@ -35,7 +35,7 @@ export class UIManager {
 	}
 
 	async loadAssets() {
-		TextureSource.defaultOptions.scaleMode = 'nearest';
+		//TextureSource.defaultOptions.scaleMode = 'nearest';
 		await this.createMainHud();
 	}
 

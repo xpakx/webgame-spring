@@ -23,10 +23,14 @@ export class Renderer {
 	this.app = new Application();
     }
 
-    async init(width = 800, height = 600) {
+    async init(
+	    width: number | undefined = undefined,
+	    height: number | undefined = undefined
+    ) {
 	await this.app.init({
 		width,
 		height,
+		resizeTo: !width && !height ? window : undefined,
 		clearBeforeRender: false,
 		backgroundAlpha: 0,
 		autoStart: false,
@@ -42,7 +46,7 @@ export class Renderer {
 		antialias: true,
 	});
         
-        this.threeRenderer.setSize(width, height);
+        this.threeRenderer.setSize(this.app.screen.width, this.app.screen.height);
         this.threeRenderer.setPixelRatio(window.devicePixelRatio);
     }
 

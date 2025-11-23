@@ -15,7 +15,7 @@ import { AssetManager } from './asset-manager';
 
 (async () => {
 	const r = new Renderer();
-	await r.init()
+	await r.init(800, 600)
 	const game = new Game()
 	const ui = new UIManager(
 		r.app.stage,
