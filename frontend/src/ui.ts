@@ -1,4 +1,3 @@
-import { gsap } from 'gsap';
 import { 
 	Assets, Sprite, TextureSource, Container, Graphics,
 	Texture, 
@@ -13,18 +12,20 @@ const HUD_CONFIG = {
     mp: {x: 110, y: 42, width: 140, height: 11}
 };
 
+const SKILLS_CONFIG = {
+    marginBottom: 5,
+};
+
 
 export class UIManager {
 	public stage: Container;
 	public width: number;
 	public height: number;
 
-	private logo: Sprite | null = null;
-
-
 	private hudContainer: Container;
 	private hpBar: Sprite | null = null;
 	private mpBar: Sprite | null = null;
+	private skillContainer: Container;
 
 	constructor(stage: Container, width: number, height: number) {
 		this.stage = stage;
@@ -32,11 +33,13 @@ export class UIManager {
 		this.height = height;
 
 		this.hudContainer = new Container();
+		this.skillContainer = new Container();
 	}
 
 	async loadAssets() {
 		//TextureSource.defaultOptions.scaleMode = 'nearest';
 		await this.createMainHud();
+		await this.createSkillHud();
 	}
 
 	update(dt: number) {
@@ -107,6 +110,18 @@ export class UIManager {
 		    .fill({ color: color, alpha: 0.9 });
 	    bg.position.set(config.x, config.y);
 	    this.hudContainer.addChild(bg);
+    }
+
+    private async createSkillHud() {
+	    const hudTexture = await Assets.load('assets/skills.png'); 
+	    this.skillContainer.position.set(
+		    this.width/2 - hudTexture.width/2,
+		    this.height - SKILLS_CONFIG.marginBottom - hudTexture.height,
+	    );
+	    this.stage.addChild(this.skillContainer);
+
+	    const hudFrame = new Sprite(hudTexture);
+	    this.skillContainer.addChild(hudFrame);
     }
 
 }
