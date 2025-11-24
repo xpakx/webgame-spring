@@ -78,6 +78,19 @@ import { AssetManager } from './asset-manager';
 
 	// r.enablePostprocessing(scene, camera);
 	
+	let zoomLevel = 1;
+	const minZoom = 0.3;
+	const maxZoom = 3.0;
+	const zoomSensitivity = 0.001;
+
+	window.addEventListener('wheel', (e) => {
+		zoomLevel += e.deltaY * zoomSensitivity;
+		zoomLevel = Math.max(minZoom, Math.min(maxZoom, zoomLevel));
+		camera.position.y = 15 * zoomLevel; 
+		camera.position.z = player.position.z + 12 * zoomLevel;
+		camera.position.x = player.position.x;
+	});
+	
 	const playerSpeed = 0.2;
 	function handleInput() {
 		let moveDirection = new Vector3(0, 0, 0);
@@ -92,7 +105,7 @@ import { AssetManager } from './asset-manager';
 			player.rotation.y = targetRotation;
 		}
 		camera.position.x = player.position.x;
-		camera.position.z = player.position.z + 12;
+		camera.position.z = player.position.z + 12 * zoomLevel;
 	}
 
 
