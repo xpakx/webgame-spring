@@ -2,11 +2,9 @@ import { gsap } from 'gsap';
 import {
 	Scene, PerspectiveCamera,
 	BoxGeometry, MeshBasicMaterial, Mesh,
-	HemisphereLight,
 	PCFSoftShadowMap, PlaneGeometry,
 	MeshToonMaterial, ConeGeometry,
-	AmbientLight,
-	DirectionalLight, Vector3,
+	Vector3,
 } from "three";
 import { Renderer } from './renderer';
 import { Game } from './game';
@@ -62,19 +60,7 @@ import { AssetManager } from './asset-manager';
 	teapot2.position.x = -10;
 	scene.add(teapot2);
 
-	const ambientLight = new AmbientLight(0xffffff, 0.5);
-	scene.add(ambientLight);
-	const directionalLight = new DirectionalLight(0xffffff, 0.7);
-	directionalLight.position.set(20, 30, 20);
-	directionalLight.castShadow = true;
-	directionalLight.shadow.mapSize.width = 2048;
-	directionalLight.shadow.mapSize.height = 2048;
-	directionalLight.shadow.camera.left = -50;
-	directionalLight.shadow.camera.right = 50;
-	directionalLight.shadow.camera.top = 50;
-	directionalLight.shadow.camera.bottom = -50;
-	scene.add(directionalLight);
-	scene.add(new HemisphereLight(0xffffff, 0x444444, 2));
+	r.addDefaultLights(scene);
 
 	camera.position.set(0, 15, 12);
 	camera.lookAt(player.position);

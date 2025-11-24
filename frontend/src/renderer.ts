@@ -3,6 +3,7 @@ import {
 	WebGLRenderer as ThreeRenderer, Scene, Camera,
 	RGBAFormat,
 	WebGLRenderTarget,
+	AmbientLight, DirectionalLight, HemisphereLight,
 } from 'three';
 
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
@@ -88,5 +89,21 @@ export class Renderer {
 
 	this.app.renderer.resetState();
 	this.app.renderer.render(this.app.stage);
+    }
+
+    addDefaultLights(threeScene: Scene) {
+	const ambientLight = new AmbientLight(0xffffff, 0.5);
+	threeScene.add(ambientLight);
+	const directionalLight = new DirectionalLight(0xffffff, 0.7);
+	directionalLight.position.set(20, 30, 20);
+	directionalLight.castShadow = true;
+	directionalLight.shadow.mapSize.width = 2048;
+	directionalLight.shadow.mapSize.height = 2048;
+	directionalLight.shadow.camera.left = -50;
+	directionalLight.shadow.camera.right = 50;
+	directionalLight.shadow.camera.top = 50;
+	directionalLight.shadow.camera.bottom = -50;
+	threeScene.add(directionalLight);
+	threeScene.add(new HemisphereLight(0xffffff, 0x444444, 2));
     }
 }
