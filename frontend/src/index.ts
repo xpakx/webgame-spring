@@ -96,15 +96,16 @@ import { AssetManager } from './asset-manager';
 	}
 
 
-
+	let isPaused = false
 	const render = (t: number) => {
+		requestAnimationFrame(render);
+		if (isPaused) return;
 		handleInput();
 		game.tick()
 		gsap.updateRoot(t / 1000);
 		ui.update(t);
 		r.render(scene, camera)
 
-		requestAnimationFrame(render);
 	}
 	requestAnimationFrame(render);
 })();
