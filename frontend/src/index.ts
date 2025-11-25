@@ -1,15 +1,13 @@
 import { gsap } from 'gsap';
 import {
-	Scene, PerspectiveCamera,
-	BoxGeometry, MeshBasicMaterial, Mesh,
-	PCFSoftShadowMap, PlaneGeometry,
-	MeshToonMaterial, ConeGeometry,
-	Vector3,
+	PerspectiveCamera, PCFSoftShadowMap,
+	MeshToonMaterial, Vector3,
 } from "three";
 import { Renderer } from './renderer';
 import { Game } from './game';
 import { UIManager } from './ui';
 import { AssetManager } from './asset-manager';
+import { GameWorld } from './game-world';
 
 (async () => {
 	const r = new Renderer();
@@ -23,8 +21,7 @@ import { AssetManager } from './asset-manager';
 	ui.loadAssets();
 	gsap.ticker.remove(gsap.updateRoot);
 	const assets = new AssetManager();
-
-	const scene = new Scene();
+	const world = new GameWorld(assets);
 
 	
 	r.threeRenderer!.setClearColor(0x111111);
@@ -34,49 +31,25 @@ import { AssetManager } from './asset-manager';
 	const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 
-	const groundGeometry = new PlaneGeometry(500, 500);
-	const groundMaterial = new MeshToonMaterial({color: 0x280028});
-	const ground = new Mesh(groundGeometry, groundMaterial);
-	ground.rotation.x = -Math.PI / 2;
-	ground.receiveShadow = true;
-	scene.add(ground);
-	const playerGeometry = new ConeGeometry(0.5, 1.5, 4);
-	const playerMaterial = new MeshToonMaterial({color: 0xff00ff});
-	const player = new Mesh(playerGeometry, playerMaterial);
-	player.position.y = 0.75;
-	player.castShadow = true;
-	scene.add(player);
-
 	await assets.loadAsset(
 		'teapot', 'assets/teapot.obj'
 	);
 	const teapotMaterial = new MeshToonMaterial({color: 0xff1155});
 	assets.setAssetMaterial('teapot', teapotMaterial)
 
-	const teapot = assets.getAsset('teapot');
-	teapot.position.x = 10;
-	scene.add(teapot);
-	const teapot2 = assets.getAsset("teapot");
-	teapot2.position.x = -10;
-	scene.add(teapot2);
+	world.initMap();
 
-	r.addDefaultLights(scene);
+	r.addDefaultLights(world.getScene());
 
 	camera.position.set(0, 15, 12);
-	camera.lookAt(player.position);
+	camera.lookAt(world.getPlayerPos());
 
-	gsap.to(teapot.rotation, {
-		y: Math.PI * 2,
-		duration: 5,
-		repeat: -1,
-		ease: "none",
-	});
 
 	let keys: {[key: string]: boolean} = {};
 	window.addEventListener('keydown', (e) => keys[e.code] = true);
 	window.addEventListener('keyup', (e) => keys[e.code] = false);
 
-	// r.enablePostprocessing(scene, camera);
+	// r.enablePostprocessing(world.getScene(), camera);
 	
 	let zoomLevel = 1;
 	const minZoom = 0.3;
@@ -87,8 +60,8 @@ import { AssetManager } from './asset-manager';
 		zoomLevel += e.deltaY * zoomSensitivity;
 		zoomLevel = Math.max(minZoom, Math.min(maxZoom, zoomLevel));
 		camera.position.y = 15 * zoomLevel; 
-		camera.position.z = player.position.z + 12 * zoomLevel;
-		camera.position.x = player.position.x;
+		camera.position.z = world.getPlayerPos().z + 12 * zoomLevel;
+		camera.position.x = world.getPlayerPos().x;
 	});
 	
 	const playerSpeed = 0.2;
@@ -98,14 +71,16 @@ import { AssetManager } from './asset-manager';
 		if (keys['KeyS'] || keys['ArrowDown']) moveDirection.z += 1;
 		if (keys['KeyA'] || keys['ArrowLeft']) moveDirection.x -= 1;
 		if (keys['KeyD'] || keys['ArrowRight']) moveDirection.x += 1;
+
+		const player = world.getPlayerPos()
 		if(moveDirection.lengthSq() > 0) {
 			moveDirection.normalize();
-			player.position.add(moveDirection.multiplyScalar(playerSpeed));
+			player.add(moveDirection.multiplyScalar(playerSpeed));
 			const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
-			player.rotation.y = targetRotation;
+			player.y = targetRotation;
 		}
-		camera.position.x = player.position.x;
-		camera.position.z = player.position.z + 12 * zoomLevel;
+		camera.position.x = player.x;
+		camera.position.z = player.z + 12 * zoomLevel;
 	}
 
 
@@ -117,7 +92,7 @@ import { AssetManager } from './asset-manager';
 		game.tick()
 		gsap.updateRoot(t / 1000);
 		ui.update(t);
-		r.render(scene, camera)
+		r.render(world.getScene(), camera)
 
 	}
 	requestAnimationFrame(render);
