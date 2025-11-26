@@ -11,7 +11,7 @@ import { GameWorld } from './game-world';
 
 (async () => {
 	const r = new Renderer();
-	await r.init(800, 600)
+	await r.init()
 	const game = new Game()
 	const ui = new UIManager(
 		r.app.stage,
@@ -63,6 +63,17 @@ import { GameWorld } from './game-world';
 		camera.position.z = world.getPlayerPos().z + 12 * zoomLevel;
 		camera.position.x = world.getPlayerPos().x;
 	});
+
+	window.addEventListener('resize', (e) =>{
+		const newWidth = window.innerWidth;
+		const newHeight = window.innerHeight;
+
+		r.pixiRenderer!.resize(newWidth, newHeight);
+		r.threeRenderer!.setSize(newWidth, newHeight);
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+		ui.resize(newWidth, newHeight);
+	});
 	
 	const playerSpeed = 0.2;
 	function handleInput() {
@@ -82,6 +93,7 @@ import { GameWorld } from './game-world';
 		camera.position.x = player.position.x;
 		camera.position.z = player.position.z + 12 * zoomLevel;
 	}
+
 
 
 	let isPaused = false

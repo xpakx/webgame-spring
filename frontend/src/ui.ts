@@ -28,6 +28,7 @@ export class UIManager {
 	private hpBar: Sprite | null = null;
 	private mpBar: Sprite | null = null;
 	private skillContainer: Container;
+	private skillFrameTextureWidth: number = 0;
 
 	constructor(stage: Container, width: number, height: number) {
 		this.stage = stage;
@@ -117,6 +118,7 @@ export class UIManager {
     private async createSkillHud() {
 	    const hudTexture = await Assets.load('assets/skills.png'); 
 	    const skillFrameTexture = await Assets.load('assets/skill-frame.png'); 
+	    this.skillFrameTextureWidth = hudTexture.width;
 	    this.skillContainer.position.set(
 		    this.width/2 - hudTexture.width/2,
 		    this.height - SKILLS_CONFIG.marginBottom - hudTexture.height,
@@ -138,4 +140,15 @@ export class UIManager {
 	    }
     }
 
+   public resize(width: number, height: number) {
+        this.width = width;
+        this.height = height;
+
+        if (this.skillFrameTextureWidth > 0) {
+            this.skillContainer.position.set(
+                this.width / 2 - this.skillFrameTextureWidth / 2,
+                this.height - SKILLS_CONFIG.marginBottom - this.skillContainer.height,
+            );
+        }
+    }
 }
