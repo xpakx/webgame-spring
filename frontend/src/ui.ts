@@ -14,6 +14,8 @@ const HUD_CONFIG = {
 
 const SKILLS_CONFIG = {
     marginBottom: 5,
+    skills: 4,
+    gap: 10,
 };
 
 
@@ -114,6 +116,7 @@ export class UIManager {
 
     private async createSkillHud() {
 	    const hudTexture = await Assets.load('assets/skills.png'); 
+	    const skillFrameTexture = await Assets.load('assets/skill-frame.png'); 
 	    this.skillContainer.position.set(
 		    this.width/2 - hudTexture.width/2,
 		    this.height - SKILLS_CONFIG.marginBottom - hudTexture.height,
@@ -122,6 +125,17 @@ export class UIManager {
 
 	    const hudFrame = new Sprite(hudTexture);
 	    this.skillContainer.addChild(hudFrame);
+	    const totalFramesWidth = SKILLS_CONFIG.skills * skillFrameTexture.width + (SKILLS_CONFIG.skills - 1) * SKILLS_CONFIG.gap;
+	    const startX = (hudTexture.width - totalFramesWidth) / 2;
+
+	    for (let i = 0; i < SKILLS_CONFIG.skills; i++) {
+		    const skillFrame = new Sprite(skillFrameTexture);
+		    skillFrame.position.set(
+			    startX + i * (skillFrameTexture.width + SKILLS_CONFIG.gap),
+			    (hudTexture.height - skillFrameTexture.height) / 2 + 10
+		    );
+		    this.skillContainer.addChild(skillFrame);
+	    }
     }
 
 }
