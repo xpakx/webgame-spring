@@ -72,15 +72,15 @@ import { GameWorld } from './game-world';
 		if (keys['KeyA'] || keys['ArrowLeft']) moveDirection.x -= 1;
 		if (keys['KeyD'] || keys['ArrowRight']) moveDirection.x += 1;
 
-		const player = world.getPlayerPos()
+		const player = world.getPlayer()!;
 		if(moveDirection.lengthSq() > 0) {
 			moveDirection.normalize();
-			player.add(moveDirection.multiplyScalar(playerSpeed));
+			player.position.add(moveDirection.multiplyScalar(playerSpeed));
 			const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
-			player.y = targetRotation;
+			player.rotation.y = targetRotation;
 		}
-		camera.position.x = player.x;
-		camera.position.z = player.z + 12 * zoomLevel;
+		camera.position.x = player.position.x;
+		camera.position.z = player.position.z + 12 * zoomLevel;
 	}
 
 

@@ -23,6 +23,10 @@ export class GameWorld {
 		return new Vector3(0, 0, 0);
 	}
 
+	getPlayer(): Mesh | undefined {
+		return this.player;
+	}
+
 	getScene(): Scene {
 		return this.scene;
 	}
