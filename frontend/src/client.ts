@@ -8,8 +8,25 @@ export class Client {
 		this.rest = rest_url;
 		this.webrtc = webrtc_url;
 	}
+	
+	private lastTick: number = 0;
 
 	onRtcGameMessage(event: MessageEvent) {
+		const buffer = event.data as ArrayBuffer;
+
+		const intView = new Int32Array(buffer);
+
+		// Just an example protocol
+		const tick = intView[0];
+		if (tick < this.lastTick) return;
+		this.lastTick = tick;
+		const x = intView[1];
+		const y = intView[2];
+
+		console.log("Coordinates:", x, y);
+	}
+
+	onRtcChatMessage(event: MessageEvent) {
 		const state = JSON.parse(event.data);
 		console.log(state)
 	}
@@ -24,10 +41,15 @@ export class Client {
 			iceServers: [{urls: 'stun:stun.l.google.com:19302'}]
 		});
 		const pc = this.peerConn;
-		const dc = pc.createDataChannel("game", { ordered: false });
 
+		const dc = pc.createDataChannel("game", { ordered: false });
+		dc.binaryType = "arraybuffer"; 
 		dc.onopen = () => this.onRtcOpen();
 		dc.onmessage = (event) => this.onRtcGameMessage(event);
+
+		const dcChat = pc.createDataChannel("chat", { ordered: true });
+		dcChat.onopen = () => this.onRtcOpen();
+		dcChat.onmessage = (event) => this.onRtcChatMessage(event);
 
 		const offer = await pc.createOffer();
 		await pc.setLocalDescription(offer);
