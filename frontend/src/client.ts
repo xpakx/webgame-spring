@@ -78,4 +78,24 @@ export class Client {
 		const answer = await response.json();
 		await pc.setRemoteDescription(answer);
 	}
+
+	private async post<T>(path: string, body: any): Promise<T> {
+		const res = await fetch(`${this.rest}${path}`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body)
+		});
+		if (!res.ok) throw new Error(`API Error: ${res.statusText}`);
+		return res.json() as Promise<T>;
+	}
+
+	private async get<T>(path: string, body: any): Promise<T> {
+		const res = await fetch(`${this.rest}${path}`, {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body)
+		});
+		if (!res.ok) throw new Error(`API Error: ${res.statusText}`);
+		return res.json() as Promise<T>;
+	}
 }
