@@ -5,7 +5,7 @@ import {
 	PCFSoftShadowMap, PlaneGeometry,
 	MeshToonMaterial, ConeGeometry,
 	Vector3, CylinderGeometry,
-	Box3,
+	Box3, SphereGeometry,
 } from "three";
 import { gsap } from 'gsap';
 
@@ -76,7 +76,6 @@ export class GameWorld {
 			if (Math.abs(x) < 10 && Math.abs(z) < 10) continue;
 			const type = Math.random();
 			if (type < 0.3) this.createTree(x, z);
-			else if (type < 0.5) this.createBuilding(x, z);
 			else if (type < 0.8) this.createMushroom(x, z);
 			else this.createCrystal(x, z);
 		}
@@ -104,16 +103,52 @@ export class GameWorld {
 		this.obstacles.push(tree);
 	}
 
-	createBuilding(x: number, z: number) {
-		// TODO
-	}
-
 	createMushroom(x: number, z: number) {
-		// TODO
+		const mushroomStemMaterial = new MeshToonMaterial({color: 0xFFF8DC});
+		const mushroomCapMaterial = new MeshToonMaterial({color: 0xDC143C});
+
+		const stemHeight = Math.random()*.5+.3;
+		const stem = new Mesh(
+			new CylinderGeometry(.1, .1, stemHeight, 8),
+			mushroomStemMaterial
+		);
+		stem.position.set(x, stemHeight/2, z);
+		stem.castShadow = true;
+		const cap = new Mesh(
+			new SphereGeometry(
+				Math.random()*.5+.3,
+				16, 8, 0, 
+				2*Math.PI,0,Math.PI/2
+			),
+			mushroomCapMaterial
+		);
+		cap.position.set(x, stemHeight, z);
+		cap.castShadow = true;
+		this.scene.add(stem, cap)
+		this.obstacles.push(cap);
 	}
 
 	createCrystal(x: number, z: number) {
-		// TODO
+		const crystalMaterial = new MeshToonMaterial({
+			color: 0xADD8E6,
+			transparent: true,
+			opacity: 0.5
+		});
+
+		const height = Math.random()*2+1;
+		const crystal = new Mesh(
+			new CylinderGeometry(
+				0, 
+				Math.random()*.5+.2,
+				height, 6
+			),
+			crystalMaterial
+		);
+		crystal.position.set(x, height/2, z);
+		crystal.rotation.y = Math.random()*Math.PI;
+		crystal.castShadow = true;
+		this.scene.add(crystal)
+		this.obstacles.push(crystal);
 	}
 
 	checkCollision(): boolean {
