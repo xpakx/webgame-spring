@@ -55,8 +55,8 @@ export class Client {
 		await pc.setLocalDescription(offer);
 
 		await new Promise((resolve: CallableFunction) => {
-		    if (pc.iceGatheringState === 'complete') resolve();
-		    else pc.onicecandidate = (e) => { if (!e.candidate) resolve(); };
+			if (pc.iceGatheringState === 'complete') resolve();
+			else pc.onicecandidate = (e) => { if (!e.candidate) resolve(); };
 		});
 
 		if (!pc.localDescription) {

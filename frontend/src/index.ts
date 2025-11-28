@@ -8,6 +8,7 @@ import { Game } from './game';
 import { UIManager } from './ui';
 import { AssetManager } from './asset-manager';
 import { GameWorld } from './game-world';
+import { Client } from './client';
 
 (async () => {
 	const r = new Renderer();
@@ -94,6 +95,12 @@ import { GameWorld } from './game-world';
 		camera.position.z = player.position.z + 12 * zoomLevel;
 	}
 
+	const client = new Client(
+		"http://localhost:8000",
+		"http://localhost:8000",
+	);
+	// client.rtcConnect();
+
 
 
 	let isPaused = false
@@ -103,7 +110,7 @@ import { GameWorld } from './game-world';
 		handleInput();
 		game.tick()
 		gsap.updateRoot(t / 1000);
-		ui.update(t);
+		ui.update(t, game.player);
 		r.render(world.getScene(), camera)
 
 	}

@@ -2,6 +2,7 @@ import {
 	Assets, Sprite, TextureSource, Container, Graphics,
 	Texture, 
 } from 'pixi.js';
+import { Player } from './game';
 
 
 const HUD_CONFIG = {
@@ -45,11 +46,11 @@ export class UIManager {
 		await this.createSkillHud();
 	}
 
-	update(dt: number) {
+	update(dt: number, player: Player) {
 		if (this.hpBar && this.mpBar) {
 			// Test 
-			this.hpBar.width = HUD_CONFIG.hp.width * (0.5 + 0.5 * Math.sin(dt / 1000));
-			this.mpBar.width = HUD_CONFIG.mp.width * (0.5 + 0.5 * Math.cos(dt / 1000));
+			this.hpBar.width = HUD_CONFIG.hp.width * player.getHpPercent();
+			this.mpBar.width = HUD_CONFIG.mp.width * player.getMpPercent();
 		}
 	}
 
