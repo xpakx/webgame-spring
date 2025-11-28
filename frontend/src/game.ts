@@ -1,9 +1,12 @@
+import { GameWorld } from "./game-world";
 
 export class Game {
 	player: Player;
+	world: GameWorld;
 
-	constructor() {
+	constructor(world: GameWorld) {
 		this.player = new Player();
+		this.world = world;
 	}
 
 	tick() {

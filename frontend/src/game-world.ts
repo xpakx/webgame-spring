@@ -4,7 +4,7 @@ import {
 	BoxGeometry, MeshBasicMaterial, Mesh,
 	PCFSoftShadowMap, PlaneGeometry,
 	MeshToonMaterial, ConeGeometry,
-	Vector3,
+	Vector3, CylinderGeometry,
 } from "three";
 import { gsap } from 'gsap';
 
@@ -60,5 +60,53 @@ export class GameWorld {
 			repeat: -1,
 			ease: "none",
 		});
+		this.createScenery();
+	}
+
+	createScenery() {
+		const areaSize = 200;
+		for (let i = 0; i < 300; i++) {
+			const x = (Math.random() - 0.5) * areaSize;
+			const z = (Math.random() - 0.5) * areaSize;
+			if (Math.abs(x) < 10 && Math.abs(z) < 10) continue;
+			const type = Math.random();
+			if (type < 0.3) this.createTree(x, z);
+			else if (type < 0.5) this.createBuilding(x, z);
+			else if (type < 0.8) this.createMushroom(x, z);
+			else this.createCrystal(x, z);
+		}
+	}
+
+	createTree(x: number, z: number) {
+		const treeTrunkMaterial = new MeshToonMaterial({color: 0x8B4513});
+		const treeLeavesMaterial = new MeshToonMaterial({color: 0x006400});
+
+		const treeHeight = Math.random()*3+2;
+		const tree = new Mesh(
+			new CylinderGeometry(.2, .3, treeHeight, 8),
+			treeTrunkMaterial
+		);
+		const leavesHeight = Math.random()*2+2
+		const leaves = new Mesh(
+			new ConeGeometry(1.5, leavesHeight, 8),
+			treeLeavesMaterial 
+		);
+		tree.position.set(x, treeHeight/2, z);
+		tree.castShadow = true;
+		leaves.position.set(x, treeHeight+leavesHeight/2-0.5, z)
+		leaves.castShadow = true
+		this.scene.add(tree, leaves)
+	}
+
+	createBuilding(x: number, z: number) {
+		// TODO
+	}
+
+	createMushroom(x: number, z: number) {
+		// TODO
+	}
+
+	createCrystal(x: number, z: number) {
+		// TODO
 	}
 }

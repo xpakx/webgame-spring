@@ -13,7 +13,6 @@ import { Client } from './client';
 (async () => {
 	const r = new Renderer();
 	await r.init()
-	const game = new Game()
 	const ui = new UIManager(
 		r.app.stage,
 		r.app.screen.width,
@@ -23,6 +22,7 @@ import { Client } from './client';
 	gsap.ticker.remove(gsap.updateRoot);
 	const assets = new AssetManager();
 	const world = new GameWorld(assets);
+	const game = new Game(world);
 
 	
 	r.threeRenderer!.setClearColor(0x111111);
