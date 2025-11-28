@@ -87,7 +87,13 @@ import { Client } from './client';
 		const player = world.getPlayer()!;
 		if(moveDirection.lengthSq() > 0) {
 			moveDirection.normalize();
+			const oldPos = player.position.clone();
 			player.position.add(moveDirection.multiplyScalar(playerSpeed));
+			if (world.checkCollision()) {
+				player.position.copy(oldPos);
+				game.player.hit(10);
+				return;
+			}
 			const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
 			player.rotation.y = targetRotation;
 		}

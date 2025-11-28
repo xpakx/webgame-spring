@@ -5,6 +5,7 @@ import {
 	PCFSoftShadowMap, PlaneGeometry,
 	MeshToonMaterial, ConeGeometry,
 	Vector3, CylinderGeometry,
+	Box3,
 } from "three";
 import { gsap } from 'gsap';
 
@@ -12,6 +13,10 @@ export class GameWorld {
 	private assets: AssetManager;
 	private scene: Scene;
 	private player?: Mesh;
+
+	private obstacles: Mesh[] = [];
+	private tempPlayerBox = new Box3();
+	private tempObstacleBox = new Box3();
 
 	constructor(assets: AssetManager) {
 		this.assets = assets;
@@ -96,6 +101,7 @@ export class GameWorld {
 		leaves.position.set(x, treeHeight+leavesHeight/2-0.5, z)
 		leaves.castShadow = true
 		this.scene.add(tree, leaves)
+		this.obstacles.push(tree);
 	}
 
 	createBuilding(x: number, z: number) {
@@ -108,5 +114,22 @@ export class GameWorld {
 
 	createCrystal(x: number, z: number) {
 		// TODO
+	}
+
+	checkCollision(): boolean {
+		// TODO: perhaps split in sectors?
+		if (!this.player) return false;
+
+		this.tempPlayerBox.setFromObject(this.player);
+		this.tempPlayerBox.expandByScalar(-0.1); 
+
+		for (const obstacle of this.obstacles) {
+			this.tempObstacleBox.setFromObject(obstacle);
+			if (this.tempPlayerBox.intersectsBox(this.tempObstacleBox)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
