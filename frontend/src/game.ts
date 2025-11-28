@@ -11,6 +11,10 @@ export class Game {
 
 	tick() {
 	}
+
+	reset() {
+		this.player = new Player();
+	}
 }
 
 export class Player {

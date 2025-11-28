@@ -118,6 +118,15 @@ import { Client } from './client';
 		gsap.updateRoot(t / 1000);
 		ui.update(t, game.player);
 		r.render(world.getScene(), camera)
+		if (game.player.hp == 0) {
+			world.reset();
+			game.reset();
+			game.world = world;
+			const player = world.getPlayer()!;
+			camera.position.x = player.position.x;
+			camera.position.z = player.position.z + 12 * zoomLevel;
+			r.addDefaultLights(world.getScene());
+		}
 
 	}
 	requestAnimationFrame(render);

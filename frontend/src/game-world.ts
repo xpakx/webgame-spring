@@ -167,4 +167,9 @@ export class GameWorld {
 
 		return false;
 	}
+
+	reset() {
+		this.scene = new Scene();
+		this.initMap();
+	}
 }
