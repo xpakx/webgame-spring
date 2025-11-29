@@ -2,13 +2,18 @@ import { gsap } from 'gsap';
 import {
 	PerspectiveCamera, PCFSoftShadowMap,
 	MeshToonMaterial, Vector3,
+	Mesh, BufferGeometry,
 } from "three";
+import { acceleratedRaycast, computeBoundsTree } from 'three-mesh-bvh';
 import { Renderer } from './renderer';
 import { Game } from './game';
 import { UIManager } from './ui';
 import { AssetManager } from './asset-manager';
 import { GameWorld } from './game-world';
 import { Client } from './client';
+
+Mesh.prototype.raycast = acceleratedRaycast;
+BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 
 (async () => {
 	const r = new Renderer();
