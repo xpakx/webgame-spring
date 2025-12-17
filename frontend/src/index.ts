@@ -11,6 +11,7 @@ import { UIManager } from './ui';
 import { AssetManager } from './asset-manager';
 import { GameWorld } from './game-world';
 import { Client } from './client';
+import { LocalLogic } from 'logic/local-logic';
 
 Mesh.prototype.raycast = acceleratedRaycast;
 BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
@@ -28,6 +29,8 @@ BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 	const assets = new AssetManager();
 	const world = new GameWorld(assets);
 	const game = new Game(world);
+	const logic = new LocalLogic();
+	logic.connect();
 
 	
 	r.threeRenderer!.setClearColor(0x111111);
