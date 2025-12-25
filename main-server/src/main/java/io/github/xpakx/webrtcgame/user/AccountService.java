@@ -3,6 +3,7 @@ package io.github.xpakx.webrtcgame.user;
 import io.github.xpakx.webrtcgame.jwt.JwtUtils;
 import io.github.xpakx.webrtcgame.user.dto.AuthenticationResponse;
 import io.github.xpakx.webrtcgame.user.dto.RegistrationRequest;
+import io.github.xpakx.webrtcgame.user.error.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -45,7 +46,7 @@ public class AccountService {
 
     private void testRequest(RegistrationRequest request) {
         if (userRepository.existsByUsernameIgnoreCase(request.username())) {
-            throw new RuntimeException("Username exists!");
+            throw new ValidationException("Username exists!");
         }
     }
 }
