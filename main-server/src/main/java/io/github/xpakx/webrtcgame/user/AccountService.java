@@ -1,18 +1,24 @@
 package io.github.xpakx.webrtcgame.user;
 
 import io.github.xpakx.webrtcgame.jwt.JwtUtils;
+import io.github.xpakx.webrtcgame.user.dto.AuthenticationRequest;
 import io.github.xpakx.webrtcgame.user.dto.AuthenticationResponse;
 import io.github.xpakx.webrtcgame.user.dto.RegistrationRequest;
+import io.github.xpakx.webrtcgame.user.error.AuthenticationException;
 import io.github.xpakx.webrtcgame.user.error.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -48,5 +54,32 @@ public class AccountService {
         if (userRepository.existsByUsernameIgnoreCase(request.username())) {
             throw new ValidationException("Username exists!");
         }
+    }
+
+    private Authentication authenticate(String username, String password) {
+        try {
+            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (DisabledException e) {
+            throw new AuthenticationException("User " + username + " disabled!");
+        } catch (BadCredentialsException e) {
+            throw new AuthenticationException("Invalid password!");
+        }
+    }
+
+    public AuthenticationResponse generateAuthenticationToken(AuthenticationRequest authenticationRequest) {
+        Authentication authentication = authenticate(authenticationRequest.username(), authenticationRequest.password());
+        final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        final String token = jwtUtils.generateToken(userDetails);
+        final String refreshToken = jwtUtils.generateRefreshToken(userDetails.getUsername());
+
+        boolean isModerator = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("MODERATOR"));
+        return new AuthenticationResponse(
+                token,
+                refreshToken,
+                userDetails.getUsername(),
+                isModerator
+        );
     }
 }

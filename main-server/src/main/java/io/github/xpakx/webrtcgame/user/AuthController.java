@@ -1,5 +1,6 @@
 package io.github.xpakx.webrtcgame.user;
 
+import io.github.xpakx.webrtcgame.user.dto.AuthenticationRequest;
 import io.github.xpakx.webrtcgame.user.dto.AuthenticationResponse;
 import io.github.xpakx.webrtcgame.user.dto.RegistrationRequest;
 import jakarta.validation.Valid;
@@ -23,4 +24,11 @@ public class AuthController {
 
     }
 
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticate(
+            @Valid @RequestBody AuthenticationRequest authenticationRequest) {
+        return ResponseEntity.ok(
+                service.generateAuthenticationToken(authenticationRequest)
+        );
+    }
 }
