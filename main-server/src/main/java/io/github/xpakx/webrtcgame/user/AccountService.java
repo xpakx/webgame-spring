@@ -3,11 +3,12 @@ package io.github.xpakx.webrtcgame.user;
 import io.github.xpakx.webrtcgame.jwt.JwtUtils;
 import io.github.xpakx.webrtcgame.user.dto.AuthenticationRequest;
 import io.github.xpakx.webrtcgame.user.dto.AuthenticationResponse;
+import io.github.xpakx.webrtcgame.user.dto.RefreshTokenRequest;
 import io.github.xpakx.webrtcgame.user.dto.RegistrationRequest;
 import io.github.xpakx.webrtcgame.user.error.AuthenticationException;
 import io.github.xpakx.webrtcgame.user.error.ValidationException;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -18,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -79,6 +79,31 @@ public class AccountService {
                 token,
                 refreshToken,
                 userDetails.getUsername(),
+                isModerator
+        );
+    }
+
+    public AuthenticationResponse refresh(RefreshTokenRequest request) {
+        if(jwtUtils.isInvalid(request.token())) {
+            return null;
+        }
+        Claims claims = jwtUtils.getAllClaimsFromToken(request.token());
+        Boolean isRefreshToken = claims.get("refresh", Boolean.class);
+        if (Boolean.FALSE.equals(isRefreshToken)) {
+            return null;
+        }
+
+        var username = claims.getSubject();
+        final UserDetails userDetails = userService.loadUserByUsername(username);
+
+        final String token = jwtUtils.generateToken(userDetails);
+        final String refreshToken = jwtUtils.generateRefreshToken(username);
+        boolean isModerator = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("MODERATOR"));
+        return new AuthenticationResponse(
+                token,
+                refreshToken,
+                username,
                 isModerator
         );
     }

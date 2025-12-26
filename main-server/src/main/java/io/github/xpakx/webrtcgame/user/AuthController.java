@@ -2,6 +2,7 @@ package io.github.xpakx.webrtcgame.user;
 
 import io.github.xpakx.webrtcgame.user.dto.AuthenticationRequest;
 import io.github.xpakx.webrtcgame.user.dto.AuthenticationResponse;
+import io.github.xpakx.webrtcgame.user.dto.RefreshTokenRequest;
 import io.github.xpakx.webrtcgame.user.dto.RegistrationRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,14 @@ public class AuthController {
             @Valid @RequestBody AuthenticationRequest authenticationRequest) {
         return ResponseEntity.ok(
                 service.generateAuthenticationToken(authenticationRequest)
+        );
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponse> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(
+                service.refresh(request)
         );
     }
 }
