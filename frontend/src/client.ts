@@ -79,7 +79,7 @@ export class Client {
 		await pc.setRemoteDescription(answer);
 	}
 
-	private async post<T>(path: string, body: any): Promise<T> {
+	async post<T>(path: string, body: any): Promise<T> {
 		const res = await fetch(`${this.rest}${path}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -89,7 +89,7 @@ export class Client {
 		return res.json() as Promise<T>;
 	}
 
-	private async get<T>(path: string, body: any): Promise<T> {
+	async get<T>(path: string, body: any): Promise<T> {
 		const res = await fetch(`${this.rest}${path}`, {
 			method: 'GET',
 			headers: { 'Content-Type': 'application/json' },
