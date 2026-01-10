@@ -14,6 +14,11 @@ export class AuthService {
 	async authenticate(request: AuthRequest): Promise<AuthResponse> {
 		return this.http.post('/authenticate', request);
 	}
+
+	async refresh(request: RefreshTokenRequest): Promise<AuthResponse> {
+		return this.http.post('/refresh', request);
+	}
+
 }
 
 export interface RegistrationRequest {
@@ -32,4 +37,8 @@ export interface AuthResponse {
 export interface AuthRequest {
 	username: string;
 	password: string;
+}
+
+export interface RefreshTokenRequest {
+	token: string;
 }
