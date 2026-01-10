@@ -10,6 +10,10 @@ export class AuthService {
 	async register(request: RegistrationRequest): Promise<AuthResponse> {
 		return this.http.post('/register', request);
 	}
+
+	async authenticate(request: AuthRequest): Promise<AuthResponse> {
+		return this.http.post('/authenticate', request);
+	}
 }
 
 export interface RegistrationRequest {
@@ -23,4 +27,9 @@ export interface AuthResponse {
 	refreshToken: string;
 	username: string;
 	moderatorRole: boolean;
+}
+
+export interface AuthRequest {
+	username: string;
+	password: string;
 }
