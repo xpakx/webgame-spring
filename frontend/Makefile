@@ -2,6 +2,7 @@
 
 build:
 	npm run build
+	cp assets/* dist/assets/
 
 dev:
 	npm run dev
