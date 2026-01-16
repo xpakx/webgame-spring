@@ -11,7 +11,7 @@ import { UIManager } from './ui';
 import { AssetManager } from './asset-manager';
 import { GameWorld } from './game-world';
 import { Client } from './client';
-import { LocalLogic } from 'logic/local-logic';
+import { LocalLogic } from './logic/local-logic';
 
 Mesh.prototype.raycast = acceleratedRaycast;
 BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
