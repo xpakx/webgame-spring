@@ -1,6 +1,6 @@
 import { 
 	Assets, Sprite, TextureSource, Container, Graphics,
-	Texture,
+	Texture, FederatedPointerEvent,
     uboSyncFunctionsWGSL, 
 } from 'pixi.js';
 import { Player } from './game';
@@ -185,7 +185,13 @@ export class UIWindow {
 
 
 export class BasicWindow extends UIWindow {
+	// TODO: 9-slice background
+	// TODO: drag only on topbar of window
+	// TODO: actions
 	private background: Graphics;
+
+	private isDragging: boolean = false;
+	private dragOffset = { x: 0, y: 0 };
 
 	constructor(x: number, y: number, w: number, h: number) {
 		super();
@@ -194,6 +200,10 @@ export class BasicWindow extends UIWindow {
 		this.background = new Graphics();
 		this.draw(w, h);
 
+		this.background.eventMode = 'static';
+		this.background.cursor = 'pointer';
+
+		this.setupInteractions();
 
 		this.windowContainer.addChild(this.background);
 	}
@@ -204,6 +214,27 @@ export class BasicWindow extends UIWindow {
 		this.background.lineStyle(2, 0xffffff, 1);
 		this.background.drawRect(0, 0, w, h);
 		this.background.endFill();
+	}
+
+	private setupInteractions() {
+		this.background.on('pointerdown', (e: FederatedPointerEvent) => {
+			this.isDragging = true;
+
+			const localPos = this.windowContainer.toLocal(e.global);
+			this.dragOffset.x = localPos.x;
+			this.dragOffset.y = localPos.y;
+		});
+
+		window.addEventListener('pointerup', () => {
+			this.isDragging = false;
+		});
+
+		window.addEventListener('pointermove', (e: PointerEvent) => {
+			if (this.isDragging) {
+				this.windowContainer.x = e.clientX - this.dragOffset.x;
+				this.windowContainer.y = e.clientY - this.dragOffset.y;
+			}
+		});
 	}
 
 	public register(stage: Container) {
