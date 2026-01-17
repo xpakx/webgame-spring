@@ -1,7 +1,6 @@
 import { 
-	Assets, Sprite, TextureSource, Container, Graphics,
+	Assets, Sprite, Container, Graphics,
 	Texture, FederatedPointerEvent,
-    uboSyncFunctionsWGSL, 
 } from 'pixi.js';
 import { Player } from './game';
 
@@ -210,10 +209,9 @@ export class BasicWindow extends UIWindow {
 
 	private draw(w: number, h: number) {
 		this.background.clear();
-		this.background.beginFill(0x333333);
-		this.background.lineStyle(2, 0xffffff, 1);
-		this.background.drawRect(0, 0, w, h);
-		this.background.endFill();
+		this.background.fill(0x333333);
+		this.background.setStrokeStyle({width: 2, color: 0xffffff});
+		this.background.rect(0, 0, w, h);
 	}
 
 	private setupInteractions() {
