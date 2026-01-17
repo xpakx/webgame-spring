@@ -168,10 +168,42 @@ export class UIManager {
 
 
 export class UIWindow {
-	private windowContainer: Container;
+	windowContainer: Container;
 
 	constructor() {
 		this.windowContainer = new Container();
+	}
+
+	public register(stage: Container) {
+		stage.addChild(this.windowContainer);
+	}
+
+	public unregister(stage: Container) {
+		stage.removeChild(this.windowContainer);
+	}
+}
+
+
+export class BasicWindow extends UIWindow {
+	private background: Graphics;
+
+	constructor(x: number, y: number, w: number, h: number) {
+		super();
+		this.windowContainer.x = x;
+		this.windowContainer.y = y;
+		this.background = new Graphics();
+		this.draw(w, h);
+
+
+		this.windowContainer.addChild(this.background);
+	}
+
+	private draw(w: number, h: number) {
+		this.background.clear();
+		this.background.beginFill(0x333333);
+		this.background.lineStyle(2, 0xffffff, 1);
+		this.background.drawRect(0, 0, w, h);
+		this.background.endFill();
 	}
 
 	public register(stage: Container) {

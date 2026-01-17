@@ -7,7 +7,7 @@ import {
 import { acceleratedRaycast, computeBoundsTree } from 'three-mesh-bvh';
 import { Renderer } from './renderer';
 import { Game } from './game';
-import { UIManager } from './ui';
+import { BasicWindow, UIManager } from './ui';
 import { AssetManager } from './asset-manager';
 import { GameWorld } from './game-world';
 import { Client } from './client';
@@ -114,6 +114,7 @@ BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 		"http://localhost:8000",
 	);
 	// client.rtcConnect();
+	ui.addUIWindow('test', new BasicWindow(200, 200, 100, 100));
 
 
 
