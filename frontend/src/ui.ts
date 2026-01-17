@@ -1,6 +1,7 @@
 import { 
 	Assets, Sprite, TextureSource, Container, Graphics,
-	Texture, 
+	Texture,
+    uboSyncFunctionsWGSL, 
 } from 'pixi.js';
 import { Player } from './game';
 
@@ -30,6 +31,7 @@ export class UIManager {
 	private mpBar: Sprite | null = null;
 	private skillContainer: Container;
 	private skillFrameTextureWidth: number = 0;
+	private windows: Map<string, UIWindow> = new Map();
 
 	constructor(stage: Container, width: number, height: number) {
 		this.stage = stage;
@@ -52,6 +54,15 @@ export class UIManager {
 			this.hpBar.width = HUD_CONFIG.hp.width * player.getHpPercent();
 			this.mpBar.width = HUD_CONFIG.mp.width * player.getMpPercent();
 		}
+	}
+	
+	public addUIWindow(id: string, uiWin: UIWindow) {
+		if (this.windows.has(id)) {
+			this.windows.get(id)?.unregister(this.stage);
+		}
+
+		this.windows.set(id, uiWin);
+		uiWin.register(this.stage);
 	}
 
 	private async createMainHud() {
@@ -152,4 +163,22 @@ export class UIManager {
             );
         }
     }
+}
+
+
+
+export class UIWindow {
+	private windowContainer: Container;
+
+	constructor() {
+		this.windowContainer = new Container();
+	}
+
+	public register(stage: Container) {
+		stage.addChild(this.windowContainer);
+	}
+
+	public unregister(stage: Container) {
+		stage.removeChild(this.windowContainer);
+	}
 }
