@@ -209,6 +209,11 @@ export class BasicWindow extends UIWindow {
 		this.windowContainer.addChild(this.background);
 	}
 
+	setBorder(color: number | undefined) {
+		this.borderColor = color;
+		this.draw(this.background.width, this.background.height);
+	}
+
 	private draw(w: number, h: number) {
 		this.background.clear();
 		this.background.rect(0, 0, w, h);
