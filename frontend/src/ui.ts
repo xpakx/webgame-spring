@@ -192,6 +192,7 @@ export class BasicWindow extends UIWindow {
 
 	private isDragging: boolean = false;
 	private dragOffset = { x: 0, y: 0 };
+	private borderColor: number | undefined = 0xffffff;
 
 	constructor(x: number, y: number, w: number, h: number) {
 		super();
@@ -212,7 +213,10 @@ export class BasicWindow extends UIWindow {
 		this.background.clear();
 		this.background.rect(0, 0, w, h);
 		this.background.fill(0x333333);
-		this.background.stroke({width: 2, color: 0xffffff});
+		if (this.borderColor) {
+			this.background.rect(0, 0, w, h);
+			this.background.stroke({width: 2, color: this.borderColor});
+		}
 	}
 
 	private setupInteractions() {
