@@ -210,9 +210,9 @@ export class BasicWindow extends UIWindow {
 
 	private draw(w: number, h: number) {
 		this.background.clear();
-		this.background.fill(0x333333);
-		this.background.setStrokeStyle({width: 2, color: 0xffffff});
 		this.background.rect(0, 0, w, h);
+		this.background.fill(0x333333);
+		this.background.stroke({width: 2, color: 0xffffff});
 	}
 
 	private setupInteractions() {
