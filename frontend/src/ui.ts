@@ -181,6 +181,15 @@ export class UIWindow {
 	public unregister(stage: Container) {
 		stage.removeChild(this.windowContainer);
 	}
+
+	public moveToFront() {
+		const parent = this.windowContainer.parent;
+		if (!parent) return;
+		parent.setChildIndex(
+			this.windowContainer,
+			parent.children.length - 1
+		);
+	}
 }
 
 
@@ -231,6 +240,7 @@ export class BasicWindow extends UIWindow {
 			const localPos = this.windowContainer.toLocal(e.global);
 			this.dragOffset.x = localPos.x;
 			this.dragOffset.y = localPos.y;
+			this.moveToFront();
 		});
 
 		window.addEventListener('pointerup', () => {
@@ -300,6 +310,7 @@ export class NineSliceWindow extends UIWindow {
 			const localPos = this.windowContainer.toLocal(e.global);
 			this.dragOffset.x = localPos.x;
 			this.dragOffset.y = localPos.y;
+			this.moveToFront();
 		});
 
 		window.addEventListener('pointerup', () => {
