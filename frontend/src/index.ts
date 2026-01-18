@@ -7,11 +7,12 @@ import {
 import { acceleratedRaycast, computeBoundsTree } from 'three-mesh-bvh';
 import { Renderer } from './renderer';
 import { Game } from './game';
-import { BasicWindow, UIManager } from './ui';
+import { BasicWindow, NineSliceWindow, UIManager } from './ui';
 import { AssetManager } from './asset-manager';
 import { GameWorld } from './game-world';
 import { Client } from './client';
 import { LocalLogic } from './logic/local-logic';
+import { Assets } from 'pixi.js';
 
 Mesh.prototype.raycast = acceleratedRaycast;
 BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
@@ -114,6 +115,12 @@ BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 		"http://localhost:8000",
 	);
 	// client.rtcConnect();
+		
+	let sliceWindow = new NineSliceWindow(300, 300, 100, 100);
+	const hudTexture = await Assets.load('assets/window.png'); 
+	sliceWindow.setTexture(hudTexture);
+	ui.addUIWindow('test2', sliceWindow);
+
 	ui.addUIWindow('test', new BasicWindow(200, 200, 100, 100));
 
 

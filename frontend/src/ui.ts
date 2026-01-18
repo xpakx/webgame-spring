@@ -1,6 +1,7 @@
 import { 
 	Assets, Sprite, Container, Graphics,
 	Texture, FederatedPointerEvent,
+	NineSliceSprite,
 } from 'pixi.js';
 import { Player } from './game';
 
@@ -216,6 +217,75 @@ export class BasicWindow extends UIWindow {
 
 	private setupInteractions() {
 		this.background.on('pointerdown', (e: FederatedPointerEvent) => {
+			this.isDragging = true;
+
+			const localPos = this.windowContainer.toLocal(e.global);
+			this.dragOffset.x = localPos.x;
+			this.dragOffset.y = localPos.y;
+		});
+
+		window.addEventListener('pointerup', () => {
+			this.isDragging = false;
+		});
+
+		window.addEventListener('pointermove', (e: PointerEvent) => {
+			if (this.isDragging) {
+				this.windowContainer.x = e.clientX - this.dragOffset.x;
+				this.windowContainer.y = e.clientY - this.dragOffset.y;
+			}
+		});
+	}
+
+	public register(stage: Container) {
+		stage.addChild(this.windowContainer);
+	}
+
+	public unregister(stage: Container) {
+		stage.removeChild(this.windowContainer);
+	}
+}
+
+
+export class NineSliceWindow extends UIWindow {
+	private background?: NineSliceSprite;
+
+	private isDragging: boolean = false;
+	private dragOffset = { x: 0, y: 0 };
+
+	private width: number;
+	private height: number;
+
+	constructor(x: number, y: number, w: number, h: number) {
+		super();
+		this.windowContainer.x = x;
+		this.windowContainer.y = y;
+		this.width = w;
+		this.height = h;
+	}
+
+	async setTexture(texture: Texture) {
+
+		this.background = new NineSliceSprite({
+			texture: texture,
+			leftWidth: 10,
+			rightWidth: 10,
+			topHeight: 10,
+			bottomHeight: 10,
+			width: this.width,
+			height: this.height,
+		})
+
+		this.background.eventMode = 'static';
+		this.background.cursor = 'pointer';
+
+		this.setupInteractions();
+
+		this.windowContainer.addChild(this.background);
+
+	}
+
+	private setupInteractions() {
+		this.background!.on('pointerdown', (e: FederatedPointerEvent) => {
 			this.isDragging = true;
 
 			const localPos = this.windowContainer.toLocal(e.global);
