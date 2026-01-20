@@ -169,6 +169,9 @@ export class UIManager {
 
 export class UIWindow {
 	windowContainer: Container;
+	dragOffset = { x: 0, y: 0 };
+	dragging: boolean = false;
+	draggable: boolean = false;
 
 	constructor() {
 		this.windowContainer = new Container();
@@ -190,6 +193,32 @@ export class UIWindow {
 			parent.children.length - 1
 		);
 	}
+
+	public isDraggable(): boolean {
+		return this.draggable;
+	}
+
+	public isDragging(): boolean {
+		return this.dragging;
+	}
+
+	public dragEvent(e: PointerEvent) {
+		if (!this.isDragging()) return;
+		this.windowContainer.x = e.clientX - this.dragOffset.x;
+		this.windowContainer.y = e.clientY - this.dragOffset.y;
+	}
+
+	public startDragEvent(e: FederatedPointerEvent) {
+		this.dragging = true;
+		const localPos = this.windowContainer.toLocal(e.global);
+		this.dragOffset.x = localPos.x;
+		this.dragOffset.y = localPos.y;
+	}
+
+	public pointerUpEvent() {
+		this.dragging = false;
+	}
+
 }
 
 
@@ -197,11 +226,7 @@ export class BasicWindow extends UIWindow {
 	// TODO: drag only on topbar of window
 	// TODO: actions
 	private background: Graphics;
-
-	private isDragging: boolean = false;
-	private dragOffset = { x: 0, y: 0 };
 	private borderColor: number | undefined = 0xffffff;
-	private draggable: boolean;
 
 	constructor(x: number, y: number, w: number, h: number,
 		   draggable: boolean = true) {
@@ -235,28 +260,18 @@ export class BasicWindow extends UIWindow {
 		}
 	}
 
-	private startDragEvent(e: FederatedPointerEvent) {
-		this.isDragging = true;
-		const localPos = this.windowContainer.toLocal(e.global);
-		this.dragOffset.x = localPos.x;
-		this.dragOffset.y = localPos.y;
-	}
-
 	private setupInteractions() {
 		this.background.on('pointerdown', (e: FederatedPointerEvent) => {
-			if (this.draggable) this.startDragEvent(e)
+			if (this.isDraggable()) this.startDragEvent(e)
 			this.moveToFront();
 		});
 
 		window.addEventListener('pointerup', () => {
-			this.isDragging = false;
+			this.pointerUpEvent()
 		});
 
 		window.addEventListener('pointermove', (e: PointerEvent) => {
-			if (this.isDragging) {
-				this.windowContainer.x = e.clientX - this.dragOffset.x;
-				this.windowContainer.y = e.clientY - this.dragOffset.y;
-			}
+			this.dragEvent(e);
 		});
 	}
 
@@ -273,18 +288,17 @@ export class BasicWindow extends UIWindow {
 export class NineSliceWindow extends UIWindow {
 	private background?: NineSliceSprite;
 
-	private isDragging: boolean = false;
-	private dragOffset = { x: 0, y: 0 };
-
 	private width: number;
 	private height: number;
 
-	constructor(x: number, y: number, w: number, h: number) {
+	constructor(x: number, y: number, w: number, h: number,
+		    draggable: boolean = true) {
 		super();
 		this.windowContainer.x = x;
 		this.windowContainer.y = y;
 		this.width = w;
 		this.height = h;
+		this.draggable = draggable;
 	}
 
 	async setTexture(texture: Texture) {
@@ -310,25 +324,27 @@ export class NineSliceWindow extends UIWindow {
 
 	private setupInteractions() {
 		this.background!.on('pointerdown', (e: FederatedPointerEvent) => {
-			this.isDragging = true;
-
-			const localPos = this.windowContainer.toLocal(e.global);
-			this.dragOffset.x = localPos.x;
-			this.dragOffset.y = localPos.y;
+			if (this.isDraggable()) this.startDragEvent(e)
 			this.moveToFront();
 		});
 
 		window.addEventListener('pointerup', () => {
-			this.isDragging = false;
+			this.pointerUpEvent();
 		});
 
 		window.addEventListener('pointermove', (e: PointerEvent) => {
-			if (this.isDragging) {
-				this.windowContainer.x = e.clientX - this.dragOffset.x;
-				this.windowContainer.y = e.clientY - this.dragOffset.y;
-			}
+			this.dragEvent(e);
 		});
 	}
+
+	public dragEvent(e: PointerEvent): void {
+		if (this.dragging) {
+			this.windowContainer.x = e.clientX - this.dragOffset.x;
+			this.windowContainer.y = e.clientY - this.dragOffset.y;
+		}
+	    
+	}
+
 
 	public register(stage: Container) {
 		stage.addChild(this.windowContainer);
