@@ -121,7 +121,7 @@ BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 	sliceWindow.setTexture(hudTexture);
 	ui.addUIWindow('test2', sliceWindow);
 
-	ui.addUIWindow('test', new BasicWindow(200, 200, 100, 100));
+	ui.addUIWindow('test', new BasicWindow(200, 200, 100, 100, false));
 
 
 

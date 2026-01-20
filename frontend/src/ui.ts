@@ -194,7 +194,6 @@ export class UIWindow {
 
 
 export class BasicWindow extends UIWindow {
-	// TODO: 9-slice background
 	// TODO: drag only on topbar of window
 	// TODO: actions
 	private background: Graphics;
@@ -202,9 +201,12 @@ export class BasicWindow extends UIWindow {
 	private isDragging: boolean = false;
 	private dragOffset = { x: 0, y: 0 };
 	private borderColor: number | undefined = 0xffffff;
+	private draggable: boolean;
 
-	constructor(x: number, y: number, w: number, h: number) {
+	constructor(x: number, y: number, w: number, h: number,
+		   draggable: boolean = true) {
 		super();
+		this.draggable = draggable;
 		this.windowContainer.x = x;
 		this.windowContainer.y = y;
 		this.background = new Graphics();
@@ -233,13 +235,16 @@ export class BasicWindow extends UIWindow {
 		}
 	}
 
+	private startDragEvent(e: FederatedPointerEvent) {
+		this.isDragging = true;
+		const localPos = this.windowContainer.toLocal(e.global);
+		this.dragOffset.x = localPos.x;
+		this.dragOffset.y = localPos.y;
+	}
+
 	private setupInteractions() {
 		this.background.on('pointerdown', (e: FederatedPointerEvent) => {
-			this.isDragging = true;
-
-			const localPos = this.windowContainer.toLocal(e.global);
-			this.dragOffset.x = localPos.x;
-			this.dragOffset.y = localPos.y;
+			if (this.draggable) this.startDragEvent(e)
 			this.moveToFront();
 		});
 
