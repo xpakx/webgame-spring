@@ -26,6 +26,7 @@ BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 		r.app.screen.height,
 	);
 	ui.loadAssets();
+	ui.setupInteractions();
 	gsap.ticker.remove(gsap.updateRoot);
 	const assets = new AssetManager();
 	const world = new GameWorld(assets);

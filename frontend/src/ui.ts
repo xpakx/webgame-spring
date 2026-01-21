@@ -163,6 +163,22 @@ export class UIManager {
             );
         }
     }
+
+    public setupInteractions() {
+	window.addEventListener('pointerup', () => {
+		for (let win of this.windows.values()) {
+			win.pointerUpEvent()
+		}
+	});
+
+	window.addEventListener('pointermove', (e: PointerEvent) => {
+		for (let win of this.windows.values()) {
+			if (win.isDragging()) {
+				win.dragEvent(e);
+			}
+		}
+	});
+    }
 }
 
 
@@ -266,13 +282,6 @@ export class BasicWindow extends UIWindow {
 			this.moveToFront();
 		});
 
-		window.addEventListener('pointerup', () => {
-			this.pointerUpEvent()
-		});
-
-		window.addEventListener('pointermove', (e: PointerEvent) => {
-			this.dragEvent(e);
-		});
 	}
 
 	public register(stage: Container) {
