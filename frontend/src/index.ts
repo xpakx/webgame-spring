@@ -17,16 +17,28 @@ import { Assets } from 'pixi.js';
 Mesh.prototype.raycast = acceleratedRaycast;
 BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 
-(async () => {
-	const r = new Renderer();
-	await r.init()
+function prepareUI(renderer: Renderer) {
 	const ui = new UIManager(
-		r.app.stage,
-		r.app.screen.width,
-		r.app.screen.height,
+		renderer.app.stage,
+		renderer.app.screen.width,
+		renderer.app.screen.height,
 	);
 	ui.loadAssets();
 	ui.setupInteractions();
+	return ui;
+}
+
+function setUpRenderer(renderer: Renderer, world: GameWorld) {
+	renderer.threeRenderer!.setClearColor(0x111111);
+	renderer.threeRenderer!.autoClear = true;
+	renderer.threeRenderer!.shadowMap.enabled = true;
+	renderer.threeRenderer!.shadowMap.type = PCFSoftShadowMap;
+}
+
+(async () => {
+	const r = new Renderer();
+	await r.init()
+	const ui = prepareUI(r);
 	gsap.ticker.remove(gsap.updateRoot);
 	const assets = new AssetManager();
 	const world = new GameWorld(assets);
@@ -34,11 +46,7 @@ BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 	const logic = new LocalLogic();
 	logic.connect();
 
-	
-	r.threeRenderer!.setClearColor(0x111111);
-	r.threeRenderer!.autoClear = true;
-	r.threeRenderer!.shadowMap.enabled = true;
-	r.threeRenderer!.shadowMap.type = PCFSoftShadowMap;
+	setUpRenderer(r, world);
 	const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 
