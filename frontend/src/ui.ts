@@ -283,14 +283,6 @@ export class BasicWindow extends UIWindow {
 		});
 
 	}
-
-	public register(stage: Container) {
-		stage.addChild(this.windowContainer);
-	}
-
-	public unregister(stage: Container) {
-		stage.removeChild(this.windowContainer);
-	}
 }
 
 
@@ -352,14 +344,5 @@ export class NineSliceWindow extends UIWindow {
 			this.windowContainer.y = e.clientY - this.dragOffset.y;
 		}
 	    
-	}
-
-
-	public register(stage: Container) {
-		stage.addChild(this.windowContainer);
-	}
-
-	public unregister(stage: Container) {
-		stage.removeChild(this.windowContainer);
 	}
 }
