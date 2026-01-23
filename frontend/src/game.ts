@@ -16,6 +16,7 @@ export class Game {
 		while (this.logic.hasEnemyToSpawn()) {
 			const enemy = this.logic.spawnEnemy();
 			// TODO: Add to gameworld
+			this.world.createEnemy(enemy, 1);
 		
 		}
 		

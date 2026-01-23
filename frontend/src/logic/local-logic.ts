@@ -23,6 +23,7 @@ export class LocalLogic implements GameLogic {
 	}
 
 	spawnEnemy() {
+		console.log(this.toSpawn.length)
 		return this.toSpawn.pop();
 	}
 
