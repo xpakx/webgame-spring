@@ -176,6 +176,20 @@ export class GameWorld {
 		this.initMap();
 	}
 
+	getEnemyById(id: number): Mesh | undefined {
+		return this.enemies.get(id);
+	}
+
+	getDirectionToPlayer(mesh: Mesh): Vector3 {
+		return new Vector3()
+		.subVectors(this.player!.position, mesh.position);
+	}
+
+	getDistanceToPlayer(mesh: Mesh): number {
+		const direction = this.getDirectionToPlayer(mesh);
+		return direction.length();
+	}
+
 	createEnemy(enemyType: string, level: number) {
 		if (!this.player) return;
 		let geometry, material, hp, maxHp, scale, enemyObject;

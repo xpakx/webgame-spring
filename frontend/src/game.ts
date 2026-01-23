@@ -6,6 +6,7 @@ export class Game {
 	world: GameWorld;
 	logic: GameLogic;
 	enemies: Enemy[] = [];
+	gameTime: number = 0;
 
 	constructor(world: GameWorld, logic: GameLogic) {
 		this.player = new Player();
@@ -13,7 +14,8 @@ export class Game {
 		this.logic = logic;
 	}
 
-	tick() {
+	tick(dt: number) {
+		this.gameTime += dt;
 		while (this.logic.hasEnemyToSpawn()) {
 			const enemy = this.logic.spawnEnemy();
 			// TODO: Add to gameworld
@@ -21,8 +23,26 @@ export class Game {
 			if (enemyData) this.enemies.push(enemyData)
 		
 		}
+		this.updateEnemies(dt);
 		
 	}
+
+
+	updateEnemies(dt: number) {
+		this.enemies.forEach(enemy => {
+			const currentSpeed = enemy.isSlowed ? 0.2 : 1.0;
+
+			const bounceSpeed = 5;
+			const bounceHeight = 0.25;
+			const enemyMesh = this.world.getEnemyById(enemy.id);
+			if (!enemyMesh) return;
+			const direction = this.world.getDirectionToPlayer(enemyMesh);
+			enemyMesh.position.y = enemy.baseHeight + Math.sin(this.gameTime * bounceSpeed + enemy.bounceOffset) * bounceHeight;
+			const speed = 0.05;
+			enemyMesh.position.add(direction.normalize().multiplyScalar(speed * currentSpeed));
+		});
+	}
+
 
 	reset() {
 		this.player = new Player();

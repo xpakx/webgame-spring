@@ -139,7 +139,7 @@ function setUpRenderer(renderer: Renderer, world: GameWorld) {
 		requestAnimationFrame(render);
 		if (isPaused) return;
 		handleInput();
-		game.tick()
+		game.tick(t)
 		gsap.updateRoot(t / 1000);
 		ui.update(t, game.player);
 		r.render(world.getScene(), camera)
