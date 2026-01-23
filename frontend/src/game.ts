@@ -15,7 +15,7 @@ export class Game {
 	}
 
 	tick(dt: number) {
-		this.gameTime += dt;
+		this.gameTime += this.world.getWorldClockDelta();
 		while (this.logic.hasEnemyToSpawn()) {
 			const enemy = this.logic.spawnEnemy();
 			// TODO: Add to gameworld
@@ -23,12 +23,12 @@ export class Game {
 			if (enemyData) this.enemies.push(enemyData)
 		
 		}
-		this.updateEnemies(dt);
+		this.updateEnemies();
 		
 	}
 
 
-	updateEnemies(dt: number) {
+	updateEnemies() {
 		this.enemies.forEach(enemy => {
 			const currentSpeed = enemy.isSlowed ? 0.2 : 1.0;
 

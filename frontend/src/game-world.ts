@@ -6,7 +6,8 @@ import {
 	MeshToonMaterial, ConeGeometry,
 	Vector3, CylinderGeometry,
 	Box3, SphereGeometry,
-	OctahedronGeometry
+	OctahedronGeometry,
+	Clock,
 } from "three";
 import { gsap } from 'gsap';
 
@@ -20,10 +21,15 @@ export class GameWorld {
 	private nextEnemyId: number = 1;
 	private tempPlayerBox = new Box3();
 	private tempObstacleBox = new Box3();
+	private clock: Clock = new Clock();
 
 	constructor(assets: AssetManager) {
 		this.assets = assets;
 		this.scene = new Scene();
+	}
+
+	getWorldClockDelta(): number {
+		return this.clock.getDelta();
 	}
 
 	getPlayerPos(): Vector3 {
