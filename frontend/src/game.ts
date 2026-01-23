@@ -5,6 +5,7 @@ export class Game {
 	player: Player;
 	world: GameWorld;
 	logic: GameLogic;
+	enemies: Enemy[] = [];
 
 	constructor(world: GameWorld, logic: GameLogic) {
 		this.player = new Player();
@@ -16,7 +17,8 @@ export class Game {
 		while (this.logic.hasEnemyToSpawn()) {
 			const enemy = this.logic.spawnEnemy();
 			// TODO: Add to gameworld
-			this.world.createEnemy(enemy, 1);
+			const enemyData = this.world.createEnemy(enemy, 1);
+			if (enemyData) this.enemies.push(enemyData)
 		
 		}
 		
@@ -52,4 +54,16 @@ export class Player {
 	getMpPercent(): number {
 		return this.mp/this.maxMp;
 	}
+}
+
+export interface Enemy {
+	id: number;
+	hp: number;
+	maxHp: number;
+	enemyType: string;
+	lastShotTime: number;
+	bounceOffset: number;
+	baseHeight: number;
+	isSlowed: boolean;
+	slowTimer: number;
 }
