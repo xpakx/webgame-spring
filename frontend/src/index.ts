@@ -42,9 +42,9 @@ function setUpRenderer(renderer: Renderer, world: GameWorld) {
 	gsap.ticker.remove(gsap.updateRoot);
 	const assets = new AssetManager();
 	const world = new GameWorld(assets);
-	const game = new Game(world);
 	const logic = new LocalLogic();
 	logic.connect();
+	const game = new Game(world, logic);
 
 	setUpRenderer(r, world);
 	const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);

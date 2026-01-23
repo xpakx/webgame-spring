@@ -1,15 +1,23 @@
+import { GameLogic } from "logic/logic";
 import { GameWorld } from "./game-world";
 
 export class Game {
 	player: Player;
 	world: GameWorld;
+	logic: GameLogic;
 
-	constructor(world: GameWorld) {
+	constructor(world: GameWorld, logic: GameLogic) {
 		this.player = new Player();
 		this.world = world;
+		this.logic = logic;
 	}
 
 	tick() {
+		if (this.logic.hasEnemyToSpawn()) {
+			const enemy = logic.spawnEnemy();
+			// TODO: Add to gameworld
+		}
+		
 	}
 
 	reset() {
