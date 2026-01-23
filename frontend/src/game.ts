@@ -13,9 +13,10 @@ export class Game {
 	}
 
 	tick() {
-		if (this.logic.hasEnemyToSpawn()) {
-			const enemy = logic.spawnEnemy();
+		while (this.logic.hasEnemyToSpawn()) {
+			const enemy = this.logic.spawnEnemy();
 			// TODO: Add to gameworld
+		
 		}
 		
 	}
