@@ -18,7 +18,6 @@ export class GameWorld {
 
 	private obstacles: Mesh[] = [];
 	private enemies: Map<number, Mesh> = new Map();
-	private nextEnemyId: number = 1;
 	private tempPlayerBox = new Box3();
 	private tempObstacleBox = new Box3();
 	private clock: Clock = new Clock();
@@ -196,9 +195,9 @@ export class GameWorld {
 		return direction.length();
 	}
 
-	createEnemy(enemyType: string, level: number) {
+	createEnemy(enemyType: string, id: number) {
 		if (!this.player) return;
-		let geometry, material, hp, maxHp, scale, enemyObject;
+		let geometry, material, scale;
 		const angle = Math.random() * Math.PI * 2;
 		const spawnDist = 40;
 		const x = this.player.position.x + Math.sin(angle) * spawnDist;
@@ -207,28 +206,20 @@ export class GameWorld {
 			case 'shooter': geometry = new OctahedronGeometry(0.7);
 
 				material = new MeshToonMaterial({color: 0x9400D3});
-				hp = 2;
 				scale = 1;
 				break;
 			case 'boss': geometry = new BoxGeometry(4, 4, 4);
 				material = new MeshToonMaterial({color: 0x8B0000});
-				hp = 50 * level;
 				scale = 4;
 				break;
 			default: geometry = new BoxGeometry(1, 1, 1);
 				material = new MeshToonMaterial({color: 0x00FF00});
-				hp = 1;
 				scale = 1;
 		}
-		maxHp = hp;
 		const mesh = new Mesh(geometry, material);
 		mesh.position.set(x, scale / 2, z);
 		mesh.castShadow = true;
-		this.enemies.set(this.nextEnemyId, mesh);
+		this.enemies.set(id, mesh);
 		this.scene.add(mesh);
-		enemyObject = { id: this.nextEnemyId, hp, maxHp, enemyType, lastShotTime: 0, bounceOffset: Math.random() * Math.PI * 2, baseHeight: scale / 2, isSlowed: false, slowTimer: 0 };
-		this.nextEnemyId += 1;
-		return enemyObject;
-
 	}
 }

@@ -7,6 +7,7 @@ export class Game {
 	logic: GameLogic;
 	enemies: Enemy[] = [];
 	gameTime: number = 0;
+	private nextEnemyId: number = 1;
 
 	constructor(world: GameWorld, logic: GameLogic) {
 		this.player = new Player();
@@ -14,13 +15,45 @@ export class Game {
 		this.logic = logic;
 	}
 
-	tick(dt: number) {
+	createEnemy(enemyType: string) {
+		const level = 1;
+		let hp, maxHp, scale;
+		switch (enemyType) { 
+			case 'shooter':
+				hp = 2;
+				scale = 1;
+				break;
+			case 'boss':
+				hp = 50 * level;
+				scale = 4;
+				break;
+			default:
+				hp = 1;
+				scale = 1;
+		}
+		maxHp = hp;
+		const id = this.nextEnemyId;
+		this.nextEnemyId += 1;
+		let enemyObject: Enemy = {
+			id,
+			hp,
+			maxHp,
+			enemyType,
+			lastShotTime: 0,
+			bounceOffset: Math.random() * Math.PI * 2,
+			baseHeight: scale / 2,
+			isSlowed: false,
+			slowTimer: 0
+		};
+		this.world.createEnemy(enemyType, enemyObject.id);
+		this.enemies.push(enemyObject)
+	}
+
+	tick(time: number) {
 		this.gameTime += this.world.getWorldClockDelta();
 		while (this.logic.hasEnemyToSpawn()) {
 			const enemy = this.logic.spawnEnemy();
-			// TODO: Add to gameworld
-			const enemyData = this.world.createEnemy(enemy, 1);
-			if (enemyData) this.enemies.push(enemyData)
+			this.createEnemy(enemy);
 		
 		}
 		this.updateEnemies();
