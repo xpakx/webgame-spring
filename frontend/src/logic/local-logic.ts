@@ -2,7 +2,7 @@ import { GameLogic } from "./logic";
 
 // Logic for game without server 
 export class LocalLogic implements GameLogic {
-	level: number = 0;
+	level: number = 4;
 	toSpawn: string[] = [];
 	
 	connect(): undefined {

@@ -6,6 +6,7 @@ export class Game {
 	world: GameWorld;
 	logic: GameLogic;
 	enemies: Enemy[] = [];
+	lastTime: number = 0;
 	gameTime: number = 0;
 	private nextEnemyId: number = 1;
 
@@ -13,6 +14,10 @@ export class Game {
 		this.player = new Player();
 		this.world = world;
 		this.logic = logic;
+	}
+
+	getTimeDelta(): number {
+		return this.gameTime - this.lastTime;
 	}
 
 	createEnemy(enemyType: string) {
@@ -49,8 +54,12 @@ export class Game {
 		this.enemies.push(enemyObject)
 	}
 
+	updateTime(time: number) {
+		this.lastTime = this.gameTime;
+		this.gameTime = time;
+	}
+
 	tick(time: number) {
-		this.gameTime += this.world.getWorldClockDelta();
 		while (this.logic.hasEnemyToSpawn()) {
 			const enemy = this.logic.spawnEnemy();
 			this.createEnemy(enemy);
