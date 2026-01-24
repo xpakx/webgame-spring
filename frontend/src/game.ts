@@ -61,7 +61,7 @@ export class Game {
 		this.logic.updateTime(time, this.getTimeDelta()*1000);
 	}
 
-	tick(time: number) {
+	tick() {
 		while (this.logic.hasEnemyToSpawn()) {
 			const enemy = this.logic.spawnEnemy();
 			this.createEnemy(enemy);
