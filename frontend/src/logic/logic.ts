@@ -3,4 +3,5 @@ export interface GameLogic {
 	connect(): undefined;
 	hasEnemyToSpawn(): boolean;
 	spawnEnemy(): any;
+	updateTime(t: number, dt: number): void;
 }

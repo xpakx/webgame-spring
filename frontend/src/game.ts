@@ -55,8 +55,10 @@ export class Game {
 	}
 
 	updateTime(time: number) {
+		const timeInSeconds = time / 1000;
 		this.lastTime = this.gameTime;
-		this.gameTime = time;
+		this.gameTime = timeInSeconds;
+		this.logic.updateTime(time, this.getTimeDelta()*1000);
 	}
 
 	tick(time: number) {
