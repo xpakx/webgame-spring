@@ -60,7 +60,12 @@ export class Game {
 	updateEnemies() {
 		this.enemies.forEach(enemy => {
 			enemy.update(this.gameTime, this.world);
+			if (enemy.isProjectileReady()) this.createEnemyProjectile(enemy);
 		});
+	}
+
+	createEnemyProjectile(enemy: Enemy) {
+		// TODO: create projectile in world
 	}
 
 
@@ -110,6 +115,7 @@ export interface Enemy {
 	slowTimer: number;
 
 	update(time: number, world: GameWorld): void;
+	isProjectileReady(): boolean;
 }
 
 export class Grunt implements Enemy {
@@ -149,11 +155,16 @@ export class Grunt implements Enemy {
 		enemyMesh.position.add(direction.normalize().multiplyScalar(speed * currentSpeed));
 	    
 	}
+
+	isProjectileReady(): boolean {
+		return false;
+	}
 }
 
 export class Shooter extends Grunt {
 	baseHp: number = 2;
 	enemyType: EnemyType = 'shooter';
+	projectileReady: boolean = false
 	
 	constructor(id: number) {
 		super(id);
@@ -162,7 +173,15 @@ export class Shooter extends Grunt {
 	shoot(time: number) {
 		if (!this.canShoot(time)) return;
 		this.lastShotTime = time;
-		// create projectile
+		this.projectileReady = true;
+	}
+
+	isProjectileReady(): boolean {
+		if (this.projectileReady) {
+			this.projectileReady = false;
+			return true;
+		}
+		return false;
 	}
 
 	canShoot(time: number): boolean {
