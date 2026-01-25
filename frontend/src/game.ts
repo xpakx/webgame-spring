@@ -165,6 +165,9 @@ export class Shooter extends Grunt {
 	baseHp: number = 2;
 	enemyType: EnemyType = 'shooter';
 	projectileReady: boolean = false
+
+	shotDistance: number = 25;
+	maxDistToPlayer: number = 15;
 	
 	constructor(id: number) {
 		super(id);
@@ -199,10 +202,10 @@ export class Shooter extends Grunt {
 		const direction = world.getDirectionToPlayer(enemyMesh);
 		const distanceToPlayer = world.getDistanceToPlayer(enemyMesh);
 		enemyMesh.position.y = this.baseHeight + Math.sin(time * bounceSpeed + this.bounceOffset) * bounceHeight;
-		if (distanceToPlayer > 15) {
+		if (distanceToPlayer > this.maxDistToPlayer) {
 			enemyMesh.position.add(direction.normalize().multiplyScalar(0.04 * currentSpeed));
 		}
-		if (distanceToPlayer < 25) {
+		if (distanceToPlayer < this.shotDistance) {
 			this.shoot(time);
 		}
 	}
