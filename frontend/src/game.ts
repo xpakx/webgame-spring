@@ -65,7 +65,12 @@ export class Game {
 	}
 
 	createEnemyProjectile(enemy: Enemy) {
-		// TODO: create projectile in world
+		const enemyMesh = this.world.getEnemyById(enemy.id);
+		if (!enemyMesh) return;
+		this.world.createEnemyProjectile(enemy.id, 1);
+		const direction = this.world.getDirectionToPlayer(enemyMesh);
+		const velocity = direction.multiplyScalar(0.5);
+		// TODO: save projectile in logic
 	}
 
 

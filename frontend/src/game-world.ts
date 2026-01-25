@@ -10,6 +10,7 @@ import {
 	Clock,
 } from "three";
 import { gsap } from 'gsap';
+import { mapSize } from "pixi.js";
 
 export class GameWorld {
 	private assets: AssetManager;
@@ -18,6 +19,7 @@ export class GameWorld {
 
 	private obstacles: Mesh[] = [];
 	private enemies: Map<number, Mesh> = new Map();
+	private enemyProjectiles: Map<number, Mesh> = new Map();
 	private tempPlayerBox = new Box3();
 	private tempObstacleBox = new Box3();
 	private clock: Clock = new Clock();
@@ -221,5 +223,16 @@ export class GameWorld {
 		mesh.castShadow = true;
 		this.enemies.set(id, mesh);
 		this.scene.add(mesh);
+	}
+
+	createEnemyProjectile(enemyId: number, id: number) {
+		const enemyMesh =  this.getEnemyById(enemyId);
+		if (!enemyMesh) return;
+		const projGeo = new SphereGeometry(0.3, 8, 8);
+		const material = new MeshToonMaterial({color: 0x8B0000});
+		const projectile = new Mesh(projGeo, material);
+		projectile.position.copy(enemyMesh.position);
+		this.enemyProjectiles.set(id, projectile);
+		this.scene.add(projectile); 
 	}
 }
