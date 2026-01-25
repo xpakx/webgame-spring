@@ -22,36 +22,21 @@ export class Game {
 
 	createEnemy(enemyType: string) {
 		const level = 1;
-		let hp, maxHp, scale;
-		switch (enemyType) { 
-			case 'shooter':
-				hp = 2;
-				scale = 1;
-				break;
-			case 'boss':
-				hp = 50 * level;
-				scale = 4;
-				break;
-			default:
-				hp = 1;
-				scale = 1;
-		}
-		maxHp = hp;
+		let enemy;
 		const id = this.nextEnemyId;
 		this.nextEnemyId += 1;
-		let enemyObject: Enemy = {
-			id,
-			hp,
-			maxHp,
-			enemyType,
-			lastShotTime: 0,
-			bounceOffset: Math.random() * Math.PI * 2,
-			baseHeight: scale / 2,
-			isSlowed: false,
-			slowTimer: 0
-		};
-		this.world.createEnemy(enemyType, enemyObject.id);
-		this.enemies.push(enemyObject)
+		switch (enemyType) { 
+			case 'shooter':
+				enemy = new Shooter(id);
+				break;
+			case 'boss':
+				enemy = new Boss(id, level);
+				break;
+			default:
+				enemy = new Grunt(id);
+		}
+		this.world.createEnemy(enemyType, id);
+		this.enemies.push(enemy)
 	}
 
 	updateTime(time: number) {
@@ -120,14 +105,63 @@ export class Player {
 	}
 }
 
+type EnemyType = 'grunt' | 'shooter' | 'boss';
+
 export interface Enemy {
 	id: number;
 	hp: number;
 	maxHp: number;
-	enemyType: string;
+	enemyType: EnemyType;
 	lastShotTime: number;
 	bounceOffset: number;
 	baseHeight: number;
 	isSlowed: boolean;
 	slowTimer: number;
+}
+
+export class Grunt implements Enemy {
+	enemyType: EnemyType = 'grunt';
+	id: number;
+	hp: number;
+	maxHp: number;
+	lastShotTime: number;
+	bounceOffset: number;
+	baseHeight: number;
+	isSlowed: boolean;
+	slowTimer: number;
+	scale: number = 1;
+	baseHp: number = 1;
+
+	constructor(id: number) {
+		this.id = id;
+		this.hp = this.baseHp;
+		this.maxHp = this.hp;
+		this.lastShotTime = 0;
+		this.bounceOffset = Math.random() * Math.PI * 2;
+		this.baseHeight = this.scale / 2;
+		this.isSlowed = false;
+		this.slowTimer = 0;
+	}
+}
+
+export class Shooter extends Grunt {
+	baseHp: number = 2;
+	enemyType: EnemyType = 'shooter';
+	
+	constructor(id: number) {
+		super(id);
+	}
+}
+
+export class Boss extends Grunt {
+	baseHp: number = 2;
+	scale: number = 4;
+	enemyType: EnemyType = 'boss';
+	
+	constructor(id: number, level: number) {
+		super(id);
+		this.baseHp = 50 * level;
+		this.hp = this.baseHp;
+		this.maxHp = this.hp;
+	}
 }
