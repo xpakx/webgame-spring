@@ -59,16 +59,7 @@ export class Game {
 
 	updateEnemies() {
 		this.enemies.forEach(enemy => {
-			const currentSpeed = enemy.isSlowed ? 0.2 : 1.0;
-
-			const bounceSpeed = 5;
-			const bounceHeight = 0.25;
-			const enemyMesh = this.world.getEnemyById(enemy.id);
-			if (!enemyMesh) return;
-			const direction = this.world.getDirectionToPlayer(enemyMesh);
-			enemyMesh.position.y = enemy.baseHeight + Math.sin(this.gameTime * bounceSpeed + enemy.bounceOffset) * bounceHeight;
-			const speed = 0.05;
-			enemyMesh.position.add(direction.normalize().multiplyScalar(speed * currentSpeed));
+			enemy.update(this.gameTime, this.world);
 		});
 	}
 
@@ -117,6 +108,8 @@ export interface Enemy {
 	baseHeight: number;
 	isSlowed: boolean;
 	slowTimer: number;
+
+	update(time: number, world: GameWorld): void;
 }
 
 export class Grunt implements Enemy {
@@ -142,6 +135,20 @@ export class Grunt implements Enemy {
 		this.isSlowed = false;
 		this.slowTimer = 0;
 	}
+
+	update(time: number, world: GameWorld): void {
+		const currentSpeed = this.isSlowed ? 0.2 : 1.0;
+
+		const bounceSpeed = 5;
+		const bounceHeight = 0.25;
+		const enemyMesh = world.getEnemyById(this.id);
+		if (!enemyMesh) return;
+		const direction = world.getDirectionToPlayer(enemyMesh);
+		enemyMesh.position.y = this.baseHeight + Math.sin(time * bounceSpeed + this.bounceOffset) * bounceHeight;
+		const speed = 0.05;
+		enemyMesh.position.add(direction.normalize().multiplyScalar(speed * currentSpeed));
+	    
+	}
 }
 
 export class Shooter extends Grunt {
@@ -150,6 +157,35 @@ export class Shooter extends Grunt {
 	
 	constructor(id: number) {
 		super(id);
+	}
+
+	shoot(time: number) {
+		if (!this.canShoot(time)) return;
+		this.lastShotTime = time;
+		// create projectile
+	}
+
+	canShoot(time: number): boolean {
+		return time - this.lastShotTime > 2;
+	}
+
+	update(time: number, world: GameWorld): void {
+		const currentSpeed = this.isSlowed ? 0.2 : 1.0;
+
+		const bounceSpeed = 5;
+		const bounceHeight = 0.05;
+
+		const enemyMesh = world.getEnemyById(this.id);
+		if (!enemyMesh) return;
+		const direction = world.getDirectionToPlayer(enemyMesh);
+		const distanceToPlayer = world.getDistanceToPlayer(enemyMesh);
+		enemyMesh.position.y = this.baseHeight + Math.sin(time * bounceSpeed + this.bounceOffset) * bounceHeight;
+		if (distanceToPlayer > 15) {
+			enemyMesh.position.add(direction.normalize().multiplyScalar(0.04 * currentSpeed));
+		}
+		if (distanceToPlayer < 25) {
+			this.shoot(time);
+		}
 	}
 }
 
