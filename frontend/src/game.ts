@@ -1,14 +1,17 @@
 import { GameLogic } from "logic/logic";
 import { GameWorld } from "./game-world";
+import { Vector3 } from "three";
 
 export class Game {
 	player: Player;
 	world: GameWorld;
 	logic: GameLogic;
 	enemies: Enemy[] = [];
+	projectiles: Projectile[] = [];
 	lastTime: number = 0;
 	gameTime: number = 0;
 	private nextEnemyId: number = 1;
+	private nextProjectileId: number = 1;
 
 	constructor(world: GameWorld, logic: GameLogic) {
 		this.player = new Player();
@@ -70,10 +73,12 @@ export class Game {
 	createEnemyProjectile(enemy: Enemy) {
 		const enemyMesh = this.world.getEnemyById(enemy.id);
 		if (!enemyMesh) return;
-		this.world.createEnemyProjectile(enemy.id, 1);
+		const id = this.nextProjectileId;
+		this.nextProjectileId += 1;
+		this.world.createEnemyProjectile(enemy.id, id);
 		const direction = this.world.getDirectionToPlayer(enemyMesh);
 		const velocity = direction.multiplyScalar(0.5);
-		// TODO: save projectile in logic
+		this.projectiles.push({velocity, id: id});
 	}
 
 
@@ -230,4 +235,9 @@ export class Boss extends Grunt {
 		this.hp = this.baseHp;
 		this.maxHp = this.hp;
 	}
+}
+
+export interface Projectile {
+	id: number;
+	velocity: Vector3;
 }
