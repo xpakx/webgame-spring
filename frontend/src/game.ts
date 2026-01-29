@@ -19,22 +19,25 @@ export class Game {
 	getTimeDelta(): number {
 		return this.gameTime - this.lastTime;
 	}
+	
+	private getEnemyByType(type: string, id: number, level: number): Enemy {
+		switch (type) { 
+			case 'shooter':
+				return new Shooter(id);
+			case 'boss':
+				return new Boss(id, level);
+			default:
+				return new Grunt(id);
+		}
+	}
+
 
 	createEnemy(enemyType: string) {
 		const level = 1;
 		let enemy;
 		const id = this.nextEnemyId;
 		this.nextEnemyId += 1;
-		switch (enemyType) { 
-			case 'shooter':
-				enemy = new Shooter(id);
-				break;
-			case 'boss':
-				enemy = new Boss(id, level);
-				break;
-			default:
-				enemy = new Grunt(id);
-		}
+		enemy = this.getEnemyByType(enemyType, id, level);
 		this.world.createEnemy(enemyType, id);
 		this.enemies.push(enemy)
 	}
