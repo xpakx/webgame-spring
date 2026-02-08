@@ -19,6 +19,7 @@ export class GameWorld {
 
 	private obstacles: Mesh[] = [];
 	private enemies: Map<number, Mesh> = new Map();
+	private projectiles: Map<number, Mesh> = new Map();
 	private enemyProjectiles: Map<number, Mesh> = new Map();
 	private tempPlayerBox = new Box3();
 	private tempObstacleBox = new Box3();
@@ -234,5 +235,13 @@ export class GameWorld {
 		projectile.position.copy(enemyMesh.position);
 		this.enemyProjectiles.set(id, projectile);
 		this.scene.add(projectile); 
+	}
+
+	getProjectileById(id: number): Mesh | undefined {
+		return this.projectiles.get(id);
+	}
+
+	removeProjectile(id: number): boolean {
+		return this.projectiles.delete(id);
 	}
 }

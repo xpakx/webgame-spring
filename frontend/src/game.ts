@@ -59,6 +59,7 @@ export class Game {
 		
 		}
 		this.updateEnemies();
+		this.updateProjectiles();
 		
 	}
 
@@ -84,6 +85,23 @@ export class Game {
 
 	reset() {
 		this.player = new Player();
+	}
+	
+	updateProjectiles() {
+		for(let i = this.projectiles.length - 1; i >= 0; i--) {
+			const projectile = this.projectiles[i];
+			const mesh = this.world.getProjectileById(projectile.id);
+			if (!mesh) {
+				this.projectiles.splice(i, 1);
+				continue;
+			}
+			
+			mesh.position.add(projectile.velocity.clone().multiplyScalar(this.getTimeDelta() * 60));
+			if (this.world.getDistanceToPlayer(mesh) > 100) {
+				this.world.removeProjectile(projectile.id);
+				this.projectiles.splice(i, 1);
+			}
+		}
 	}
 }
 
